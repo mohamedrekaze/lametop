@@ -1,7 +1,11 @@
 #include "lametop.h"
 #include <sys/stat.h>
 
-void file_check(struct dirent *file_) {
+void file_check(const char *path) {
 	struct stat st;
-	stat(file_, &st);
+	
+}
+
+char *construct_path() {
+	
 }
