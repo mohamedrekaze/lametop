@@ -17,15 +17,8 @@ void open_and_print_proc() {
 	char *buff = malloc(sizeof(char) * buff_size);
 
 	while((s = readdir(dir) )!= NULL) {
-		printf("%s\n", s->d_name);
-		int fd = open(s->d_name, O_RDWR);
-		read(fd, buff, buff_size);
-		printf("%s\n", buff);
+		
 	}
-}
-
-int is_dir() {
-	
 }
 
 int main() {
