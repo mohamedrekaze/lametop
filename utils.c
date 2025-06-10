@@ -10,17 +10,18 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-void open_and_print_proc() {
+void open_and_print_proc(const char *path) {
 	DIR *dir = opendir("/proc/");
 	struct dirent *file;
 	size_t buff_size = 1000;
 	char *buff = malloc(sizeof(char) * buff_size);
 
 	while((file = readdir(dir) ) != NULL) {
-		
+		file_check(file);
 	}
 }
 
 int main() {
-	open_and_print_proc();
+	const char *path = "/proc/";
+	open_and_print_proc(path);
 }

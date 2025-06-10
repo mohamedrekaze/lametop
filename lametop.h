@@ -16,7 +16,7 @@
 /* functions */
 
 void file_check(struct dirent *file);
-void open_and_print_proc();
+void open_and_print_proc(const char *path);
 
 
 
