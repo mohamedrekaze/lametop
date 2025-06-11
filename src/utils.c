@@ -1,6 +1,7 @@
 #include "lametop.h"
 #include <ctype.h>
 #include <dirent.h>
+#include <fcntl.h>
 #include <linux/limits.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,11 +25,19 @@ void check_stats() {
 }
 
 int pid_file_check(struct dirent *file) {
-	char *path;
-	char name[NAME_MAX + 10];
-	if(is_num(file->d_name)) {
-		printf("it worked this is the path:\t%s\n", name);
+	char path[NAME_MAX + 100];
+	if(!is_num(file->d_name)) {
 	}
-	strcpy(name, file->d_name);
-	snprintf(name, sizeof(name), "/proc/%s", file->d_name);
+	strcpy(path, file->d_name);
+	snprintf(path, sizeof(path), "/proc/%s/stat", file->d_name);
+	read_stat(path);
 }
+
+char *read_stat(const char *path) {
+	char *buff;
+	int fd;
+	//buff = realloc(buff, sizeof(char) * (strlen(path) * 2));
+	open(path, O_RDWR);
+	printf("%d\n", fd);
+}
+

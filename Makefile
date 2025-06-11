@@ -16,6 +16,9 @@ $(exec): $(obj)
 clean: 
 	rm $(obj)
 
+clean: 
+	rm $(obj) $(exec)
+
 re: clean all
 
 .PHONY: all clean re

@@ -19,6 +19,7 @@ int file_check(struct dirent *file);
 void open_and_print_proc(const char *path);
 int pid_file_check(struct dirent *file);
 int is_num(char *file_name);
+char *read_stat(const char *path);
 
 
 
