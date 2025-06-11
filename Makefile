@@ -1,4 +1,4 @@
-header = lametop.h
+header = src/lametop.h
 exec = lametop
 src = src/utils.c src/main.c
 obj = $(src:.c=.o)
@@ -8,7 +8,7 @@ all: $(exec)
 $(exec): $(src)
 
 $(exec): $(obj)
-	cc $(obj) -o $(exec)
+	cc -g $(obj) -o $(exec)
 
 %.o: %.c $(header)
 	cc -c $< -o $@
