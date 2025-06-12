@@ -27,17 +27,20 @@ void check_stats() {
 int pid_file_check(struct dirent *file) {
 	char path[NAME_MAX + 100];
 	if(!is_num(file->d_name)) {
+		printf("not a process id\n");
 	}
-	strcpy(path, file->d_name);
-	snprintf(path, sizeof(path), "/proc/%s/stat", file->d_name);
-	read_stat(path);
+	else {
+		strcpy(path, file->d_name);
+		snprintf(path, sizeof(path), "/proc/%s/stat", file->d_name);
+		read_stat(path);
+	}
 }
 
 char *read_stat(const char *path) {
-	char *buff;
-	int fd;
-	//buff = realloc(buff, sizeof(char) * (strlen(path) * 2));
-	open(path, O_RDWR);
-	printf("%d\n", fd);
+	FILE *file= fopen(path, "r");
+	unsigned int buf_size = 1024;
+	char *buffer = malloc(sizeof(char) * buf_size);
+	fread(buffer, 10, buf_size/10, file);
+	printf("%s\n", buffer);
 }
 
