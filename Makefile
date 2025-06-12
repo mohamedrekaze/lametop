@@ -16,7 +16,7 @@ $(exec): $(obj)
 clean: 
 	rm $(obj)
 
-clean: 
+fclean: 
 	rm $(obj) $(exec)
 
 re: clean all

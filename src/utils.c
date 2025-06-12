@@ -20,11 +20,7 @@ int is_num(char *file_name) {
 	return 1;
 }
 
-void check_stats() {
-	
-}
-
-int pid_file_check(struct dirent *file) {
+void pid_file_check(struct dirent *file) {
 	char path[NAME_MAX + 100];
 	if(!is_num(file->d_name)) {
 		printf("not a process id\n");
@@ -41,6 +37,17 @@ char *read_stat(const char *path) {
 	unsigned int buf_size = 1024;
 	char *buffer = malloc(sizeof(char) * buf_size);
 	fread(buffer, 10, buf_size/10, file);
-	printf("%s\n", buffer);
+	return get_next_line(buffer);
 }
 
+char *get_next_line(const char *file) {
+	int i = 0;
+	while(file[i]) {
+		if(file[i] != '\n')
+			write(STDOUT_FILENO, &file[i], 1);
+		else
+			break;
+		i++;
+	}
+	write(STDOUT_FILENO, "\n", 1);
+}
