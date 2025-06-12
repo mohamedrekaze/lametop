@@ -27,7 +27,7 @@ void pid_file_check(struct dirent *file) {
 	}
 	else {
 		strcpy(path, file->d_name);
-		snprintf(path, sizeof(path), "/proc/%s/stat", file->d_name);
+		snprintf(path, sizeof(path), "/proc/%s/status", file->d_name);
 		read_stat(path);
 	}
 }
@@ -37,17 +37,36 @@ char *read_stat(const char *path) {
 	unsigned int buf_size = 1024;
 	char *buffer = malloc(sizeof(char) * buf_size);
 	fread(buffer, 10, buf_size/10, file);
-	return get_next_line(buffer);
+	return get_field_value(buffer);
 }
 
 char *get_next_line(const char *file) {
 	int i = 0;
+	int line_len = 10;
+	char *line = malloc(sizeof(char) * line_len);
+	char *line_tmp;
 	while(file[i]) {
+		if(i == line_len - 1) {
+			line_tmp = line;
+			line = realloc(line, line_len * 2);
+			if(!line_tmp) {
+				printf("realloc error!\n");
+				line = line_tmp;
+			}
+		}
 		if(file[i] != '\n')
-			write(STDOUT_FILENO, &file[i], 1);
+			line[i] = file[i];
 		else
 			break;
 		i++;
 	}
-	write(STDOUT_FILENO, "\n", 1);
+	return line;
+}
+
+char *get_field_value(char *line) {
+	int i = 0;
+	const char *fields[] = {"Name", "Pid"};
+	while(line[i]) {
+		
+	}
 }
