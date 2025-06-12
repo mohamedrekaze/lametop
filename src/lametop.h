@@ -13,6 +13,14 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+/* structs */
+
+struct pid_values {
+	char *name;
+	char *stat;
+	int pid;
+};
+
 /* functions */
 
 int file_check(struct dirent *file);

@@ -51,7 +51,7 @@ char *get_next_line(const char *file) {
 			line = realloc(line, line_len * 2);
 			if(!line_tmp) {
 				printf("realloc error!\n");
-				line = line_tmp;
+				return line = line_tmp;
 			}
 		}
 		if(file[i] != '\n')
@@ -63,10 +63,37 @@ char *get_next_line(const char *file) {
 	return line;
 }
 
+char *copy_value(char *line) {
+	int i = 0;
+	unsigned int token_len = 20;
+	char *token_tmp;
+	char *token = malloc(sizeof(char) * token_len);
+
+	while(*line && *line != '\n') {
+		if(i + 1 == token_len) {
+			token_tmp = token;
+			token_len *= 2;
+			token = realloc(token, token_len);
+			if(!token) {
+				printf("realloc error!\n");
+				return token = token_tmp;
+			}
+		}
+		token[i] = *line;
+		line++;
+		i++;
+	}
+	return token;
+}
+
 char *get_field_value(char *line) {
 	int i = 0;
-	const char *fields[] = {"Name", "Pid"};
-	while(line[i]) {
-		
+	struct pid_values *pid =  malloc(sizeof(struct pid_values));
+	const char *fields[] = {"Name", "\0"};
+	while(fields[i]) {
+		pid->name =  copy_value(strstr(line, fields[i]));
+		printf("struct pid name: %s\n", pid->name);
+		//i++;
+		break;
 	}
 }
