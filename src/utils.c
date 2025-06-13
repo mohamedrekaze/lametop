@@ -99,8 +99,8 @@ char *get_field_value(char *line) {
 	const char *pid_name;
 	unsigned int j = 0;
 	while(fields[i]) {
-		pid->name =  copy_pid_value(strstr(line, fields[i]));
-		//pid->pid = ;
+		pid->name = copy_pid_value(strstr(line, fields[i]));
+		//pid->pid = copy_pid_value(strstr(line, fields[i]));
 		printf("%s\n", pid->name);
 		break;
 	}

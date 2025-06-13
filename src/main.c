@@ -16,7 +16,6 @@ void open_and_print_proc(const char *path) {
 	size_t buff_size = 1000;
 	char *buff = malloc(sizeof(char) * buff_size);
 	unsigned int i = 0;
-
 	while((file = readdir(dir) ) != NULL) {
 		pid_file_check(file);
 	}
