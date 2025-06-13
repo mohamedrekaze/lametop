@@ -30,6 +30,7 @@ int is_num(char *file_name);
 char *read_stat(const char *path);
 char *get_next_line(const char *file);
 char *get_field_value(char *line);
+char *copy_pid_value(char *line);
 
 
 

@@ -8,7 +8,6 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include <errno.h>
 
 int is_num(char *file_name) {
 	int i = 0;
@@ -63,12 +62,19 @@ char *get_next_line(const char *file) {
 	return line;
 }
 
-char *copy_value(char *line) {
+char *copy_pid_value(char *line) {
 	int i = 0;
 	unsigned int token_len = 20;
 	char *token_tmp;
 	char *token = malloc(sizeof(char) * token_len);
+	unsigned int j = 0;
 
+	while(line[j] != ':') {
+		j++;
+	}
+	while(!isalpha(line[j]))
+		j++;
+	line += j;
 	while(*line && *line != '\n') {
 		if(i + 1 == token_len) {
 			token_tmp = token;
@@ -89,11 +95,13 @@ char *copy_value(char *line) {
 char *get_field_value(char *line) {
 	int i = 0;
 	struct pid_values *pid =  malloc(sizeof(struct pid_values));
-	const char *fields[] = {"Name", "\0"};
+	const char *fields[] = {"Name", "Pid","\0"};
+	const char *pid_name;
+	unsigned int j = 0;
 	while(fields[i]) {
-		pid->name =  copy_value(strstr(line, fields[i]));
-		printf("struct pid name: %s\n", pid->name);
-		//i++;
+		pid->name =  copy_pid_value(strstr(line, fields[i]));
+		//pid->pid = ;
+		printf("%s\n", pid->name);
 		break;
 	}
 }
