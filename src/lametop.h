@@ -25,11 +25,11 @@ struct pid_values {
 
 int file_check(struct dirent *file);
 void open_and_print_proc(const char *path);
-void pid_file_check(struct dirent *file);
+char *construct_path(struct dirent *file);
 int is_num(char *file_name);
 char *read_stat(const char *path);
-char *get_next_line(const char *file);
-char *get_field_value(char *line);
+char *get_next_line(FILE *file);
+struct pid_values *get_field_value();
 char *copy_pid_value(char *line);
 
 

@@ -19,47 +19,29 @@ int is_num(char *file_name) {
 	return 1;
 }
 
-void pid_file_check(struct dirent *file) {
+char *construct_path(struct dirent *file) {
 	char path[NAME_MAX + 100];
-	if(!is_num(file->d_name)) {
-		printf("not a process id\n");
-	}
-	else {
+	if(is_num(file->d_name)) {
 		strcpy(path, file->d_name);
 		snprintf(path, sizeof(path), "/proc/%s/status", file->d_name);
-		read_stat(path);
 	}
+	return strdup(path);
 }
 
 char *read_stat(const char *path) {
 	FILE *file= fopen(path, "r");
 	unsigned int buf_size = 1024;
 	char *buffer = malloc(sizeof(char) * buf_size);
-	fread(buffer, 10, buf_size/10, file);
-	return get_field_value(buffer);
-}
+	unsigned int total_read = 0;
+	unsigned int byte_read = 0;
 
-char *get_next_line(const char *file) {
-	int i = 0;
-	int line_len = 10;
-	char *line = malloc(sizeof(char) * line_len);
-	char *line_tmp;
-	while(file[i]) {
-		if(i == line_len - 1) {
-			line_tmp = line;
-			line = realloc(line, line_len * 2);
-			if(!line_tmp) {
-				printf("realloc error!\n");
-				return line = line_tmp;
-			}
-		}
-		if(file[i] != '\n')
-			line[i] = file[i];
-		else
+	while((byte_read = fread(buffer+total_read, 1, 1, file)) > 0
+		&& total_read < buf_size - 1) {
+		if(buffer[total_read] == '\n')
 			break;
-		i++;
+		total_read += byte_read;
 	}
-	return line;
+	return buffer;
 }
 
 char *copy_pid_value(char *line) {
@@ -72,8 +54,12 @@ char *copy_pid_value(char *line) {
 	while(line[j] != ':') {
 		j++;
 	}
-	while(!isalpha(line[j]))
+	while(!isalpha(line[j])) {
 		j++;
+	}
+	while(!isdigit(line[j])) {
+		j++;
+	}
 	line += j;
 	while(*line && *line != '\n') {
 		if(i + 1 == token_len) {
@@ -92,16 +78,12 @@ char *copy_pid_value(char *line) {
 	return token;
 }
 
-char *get_field_value(char *line) {
+struct pid_values *get_field_value() {
 	int i = 0;
 	struct pid_values *pid =  malloc(sizeof(struct pid_values));
 	const char *fields[] = {"Name", "Pid","\0"};
-	const char *pid_name;
-	unsigned int j = 0;
-	while(fields[i]) {
-		pid->name = copy_pid_value(strstr(line, fields[i]));
-		//pid->pid = copy_pid_value(strstr(line, fields[i]));
-		printf("%s\n", pid->name);
-		break;
+
+	while() {
+		
 	}
 }
