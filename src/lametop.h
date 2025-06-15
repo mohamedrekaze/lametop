@@ -18,7 +18,7 @@
 struct pid_values {
 	char *name;
 	char *stat;
-	int pid;
+	char *pid;
 };
 
 /* functions */
@@ -29,9 +29,11 @@ char *construct_path(struct dirent *file);
 int is_num(char *file_name);
 char *read_stat(const char *path);
 char *get_next_line(FILE *file);
-struct pid_values *get_field_value();
-char *copy_pid_value(char *line);
+struct pid_values *get_field_value(const char *full_path);
+char *copy_pid_value(char *line, unsigned int numerical_flag);
 
+/* macros */
+#define fields_num 3
 
 
 
