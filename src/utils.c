@@ -24,8 +24,9 @@ char *construct_path(struct dirent *file) {
 	if(is_num(file->d_name)) {
 		strcpy(path, file->d_name);
 		snprintf(path, sizeof(path), "/proc/%s/status", file->d_name);
+		return strdup(path);
 	}
-	return strdup(path);
+	return NULL;
 }
 
 char *read_stat(const char *path) {
@@ -35,16 +36,18 @@ char *read_stat(const char *path) {
 	unsigned int total_read = 0;
 	unsigned int byte_read = 0;
 
-	while((byte_read = fread(buffer+total_read, 1, 1, file)) > 0
-		&& total_read < buf_size - 1) {
+	while((byte_read = fread(buffer+total_read, 1, 1, file)) > 0 && total_read < buf_size - 1) {
+		/*
 		if(buffer[total_read] == '\n')
 			break;
+		*/
 		total_read += byte_read;
 	}
+	buffer[total_read] = '\0';
 	return buffer;
 }
 
-char *copy_pid_value(char *line) {
+	char *copy_pid_value(char *line, unsigned int numerical_flag) {
 	int i = 0;
 	unsigned int token_len = 20;
 	char *token_tmp;
@@ -57,8 +60,10 @@ char *copy_pid_value(char *line) {
 	while(!isalpha(line[j])) {
 		j++;
 	}
-	while(!isdigit(line[j])) {
-		j++;
+	if(numerical_flag) {
+		while(!isdigit(line[j])) {
+			j++;
+		}
 	}
 	line += j;
 	while(*line && *line != '\n') {
@@ -78,12 +83,23 @@ char *copy_pid_value(char *line) {
 	return token;
 }
 
-struct pid_values *get_field_value() {
-	int i = 0;
+struct pid_values *get_field_value(const char *full_path) {
 	struct pid_values *pid =  malloc(sizeof(struct pid_values));
-	const char *fields[] = {"Name", "Pid","\0"};
-
-	while() {
-		
+	const char *fields[fields_num] = {"Name", "Pid", "State"};
+	int i = 0;
+	char *line = read_stat(full_path);
+	char *token;
+	while(i < fields_num) {
+		if(strcmp("Name", fields[i]) == 0) {
+			pid->name = copy_pid_value(strstr(line, fields[i]), 0);
+		}
+		if(strcmp("Pid", fields[i]) == 0) {
+			pid->pid = copy_pid_value(strstr(line, fields[i]), 1);
+		}
+		if(strcmp("Status", fields[i]) == 0) {
+			pid->stat = copy_pid_value(strstr(line, fields[i]), 0);
+		}
+		i++;
 	}
+	printf("%s\t%s\t%s\n", pid->name, pid->pid, pid->stat);
 }

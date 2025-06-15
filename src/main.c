@@ -3,6 +3,7 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>
@@ -18,9 +19,10 @@ void open_and_print_proc(const char *path) {
 	unsigned int i = 0;
 	char *full_path;
 	while((file = readdir(dir) ) != NULL) {
-		if(full_path = construct_path(file))
-			
-
+		full_path = construct_path(file);
+		if(full_path) {
+			get_field_value(full_path);
+		}
 	}
 }
 
