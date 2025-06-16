@@ -13,6 +13,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <ncurses.h>
+#include <string.h>
 
 /* structs */
 
@@ -40,6 +41,8 @@ char *copy_pid_value(char *line, unsigned int numerical_flag);
 char *clean_stat(char *token);
 void add_tail(pid_values *process, snapshot *file);
 void constuct_file(pid_values *process, snapshot *file);
+void print_ll(snapshot *file);
+int *get_max_column_width(int *cur_width, snapshot *file);
 
 
 /* macros */

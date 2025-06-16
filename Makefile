@@ -1,6 +1,6 @@
 header = src/lametop.h
 exec = lametop
-src = src/utils.c src/main.c
+src = $(wildcard src/*.c)
 obj = $(src:.c=.o)
 
 all: $(exec)

@@ -122,6 +122,7 @@ struct pid_values *get_field_value(const char *full_path) {
 
 void add_tail(pid_values *process, snapshot *file) {
 	snapshot *new_proc = malloc(sizeof(snapshot));
+
 	while(file->next) {
 		file = file->next;
 	}
@@ -129,5 +130,14 @@ void add_tail(pid_values *process, snapshot *file) {
 		new_proc->process = process;
 		new_proc->next = NULL;
 		file->next = new_proc;
+	}
+}
+
+void print_ll(snapshot *file) {
+	while(file->next) {
+		pid_values *process = file->process;
+		printf("%p\t%s\t%s\t%s\n", 
+		 (char *)file->next, process->name, process->pid, process->stat);
+		file = file->next;
 	}
 }

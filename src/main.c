@@ -11,12 +11,9 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-
 void constuct_file(pid_values *process, snapshot *file) {
-	snapshot *file_dummy;
-	file_dummy->process = NULL;
-	//add_tail(process, file_dummy);
-	printf("%p\t%p\n", file->process, file->next);
+	snapshot file_dummy;
+	add_tail(process, file);
 }
 
 void open_and_print_proc(const char *path) {
@@ -24,17 +21,23 @@ void open_and_print_proc(const char *path) {
 	struct dirent *file;
 	size_t buff_size = 1000;
 	char *buff = malloc(sizeof(char) * buff_size);
-	unsigned int i = 0;
+	int i = 0;
 	char *full_path;
 	snapshot *first = malloc(sizeof(snapshot));
 	pid_values *process;
+	int len_ll = 0;
 	while((file = readdir(dir) ) != NULL) {
 		full_path = construct_path(file);
 		if(full_path) {
 			process = get_field_value(full_path);
 			constuct_file(process, first);
+			len_ll++;
 		}
 	}
+	first = first->next;
+	get_max_column_width(&i, first);
+	printf("%d\n", i);
+	//print_ll(first);
 }
 
 int main() {
