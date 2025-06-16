@@ -37,12 +37,9 @@ char *read_stat(const char *path) {
 	unsigned int byte_read = 0;
 
 	while((byte_read = fread(buffer+total_read, 1, 1, file)) > 0 && total_read < buf_size - 1) {
-		/*
-		if(buffer[total_read] == '\n')
-			break;
-		*/
 		total_read += byte_read;
 	}
+	fclose(file);
 	buffer[total_read] = '\0';
 	return buffer;
 }
@@ -83,6 +80,22 @@ char *read_stat(const char *path) {
 	return token;
 }
 
+char *clean_stat(char *token) {
+	int i = 0;
+	int j = 0;
+	char new_token[strlen(token) + 10];
+	while(token[i] != '(')
+		i++;
+	i++;
+	while(token[i] != ')') {
+		new_token[j] = token[i];
+		j++;
+		i++;
+	}
+	new_token[j] = '\0';
+	return strdup(new_token);
+}
+
 struct pid_values *get_field_value(const char *full_path) {
 	struct pid_values *pid =  malloc(sizeof(struct pid_values));
 	const char *fields[fields_num] = {"Name", "Pid", "State"};
@@ -96,10 +109,13 @@ struct pid_values *get_field_value(const char *full_path) {
 		if(strcmp("Pid", fields[i]) == 0) {
 			pid->pid = copy_pid_value(strstr(line, fields[i]), 1);
 		}
-		if(strcmp("Status", fields[i]) == 0) {
-			pid->stat = copy_pid_value(strstr(line, fields[i]), 0);
+		if(strcmp("State", fields[i]) == 0) {
+			token = copy_pid_value(strstr(line, fields[i]), 0);
+			pid->stat = clean_stat(token);
+			free(token);
 		}
 		i++;
 	}
-	printf("%s\t%s\t%s\n", pid->name, pid->pid, pid->stat);
+	free(line);
+	return pid;
 }

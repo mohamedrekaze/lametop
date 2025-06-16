@@ -12,9 +12,9 @@
 #include <limits.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <ncurses.h>
 
 /* structs */
-
 struct pid_values {
 	char *name;
 	char *stat;
@@ -22,7 +22,6 @@ struct pid_values {
 };
 
 /* functions */
-
 int file_check(struct dirent *file);
 void open_and_print_proc(const char *path);
 char *construct_path(struct dirent *file);
@@ -31,6 +30,7 @@ char *read_stat(const char *path);
 char *get_next_line(FILE *file);
 struct pid_values *get_field_value(const char *full_path);
 char *copy_pid_value(char *line, unsigned int numerical_flag);
+char *clean_stat(char *token);
 
 /* macros */
 #define fields_num 3
