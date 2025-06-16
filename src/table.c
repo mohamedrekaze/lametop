@@ -1,2 +1,16 @@
 #include "lametop.h"
 
+void print_table() {
+	
+}
+
+void print_rows(int rows) {
+	int i = 0;
+	while() {
+		
+	}
+}
+
+int *get_max_column_width(int *cur_width, char **file) {
+	
+}

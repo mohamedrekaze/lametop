@@ -11,6 +11,14 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+
+void constuct_file(pid_values *process, snapshot *file) {
+	snapshot *file_dummy;
+	file_dummy->process = NULL;
+	//add_tail(process, file_dummy);
+	printf("%p\t%p\n", file->process, file->next);
+}
+
 void open_and_print_proc(const char *path) {
 	DIR *dir = opendir("/proc/");
 	struct dirent *file;
@@ -18,10 +26,13 @@ void open_and_print_proc(const char *path) {
 	char *buff = malloc(sizeof(char) * buff_size);
 	unsigned int i = 0;
 	char *full_path;
+	snapshot *first = malloc(sizeof(snapshot));
+	pid_values *process;
 	while((file = readdir(dir) ) != NULL) {
 		full_path = construct_path(file);
 		if(full_path) {
-			get_field_value(full_path);
+			process = get_field_value(full_path);
+			constuct_file(process, first);
 		}
 	}
 }

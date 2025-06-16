@@ -15,14 +15,12 @@
 #include <ncurses.h>
 
 /* structs */
-
 typedef struct pid_values {
 	char *name;
 	char *stat;
 	char *pid;
 } pid_values;
 
-typedef struct snapshot snapshot;
 typedef struct snapshot {
 	pid_values *process;
 	snapshot *next;
@@ -39,8 +37,6 @@ struct pid_values *get_field_value(const char *full_path);
 char *copy_pid_value(char *line, unsigned int numerical_flag);
 char *clean_stat(char *token);
 void add_tail(pid_values *process, snapshot *file);
-void constuct_file(pid_values *process, snapshot *file);
-
 
 /* macros */
 #define fields_num 3
