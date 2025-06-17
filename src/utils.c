@@ -35,7 +35,6 @@ char *read_stat(const char *path) {
 	char *buffer = malloc(sizeof(char) * buf_size);
 	unsigned int total_read = 0;
 	unsigned int byte_read = 0;
-
 	while((byte_read = fread(buffer+total_read, 1, 1, file)) > 0 && total_read < buf_size - 1) {
 		total_read += byte_read;
 	}
@@ -50,7 +49,6 @@ char *read_stat(const char *path) {
 	char *token_tmp;
 	char *token = malloc(sizeof(char) * token_len);
 	unsigned int j = 0;
-
 	while(line[j] != ':') {
 		j++;
 	}
@@ -122,7 +120,6 @@ struct pid_values *get_field_value(const char *full_path) {
 
 void add_tail(pid_values *process, snapshot *file) {
 	snapshot *new_proc = malloc(sizeof(snapshot));
-
 	while(file->next) {
 		file = file->next;
 	}
@@ -138,6 +135,13 @@ void print_ll(snapshot *file) {
 		pid_values *process = file->process;
 		printf("%p\t%s\t%s\t%s\n", 
 		 (char *)file->next, process->name, process->pid, process->stat);
+		file = file->next;
+	}
+}
+
+void ll_len(snapshot *file, int *len) {
+	while(file->next) {
+		(*len)++;
 		file = file->next;
 	}
 }

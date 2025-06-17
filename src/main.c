@@ -31,13 +31,11 @@ void open_and_print_proc(const char *path) {
 		if(full_path) {
 			process = get_field_value(full_path);
 			constuct_file(process, first);
-			len_ll++;
 		}
 	}
 	first = first->next;
 	get_max_column_width(&i, first);
-	printf("%d\n", i);
-	//print_ll(first);
+	ll_len(first, &len_ll);
 }
 
 int main() {

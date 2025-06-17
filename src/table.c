@@ -1,12 +1,6 @@
 #include "lametop.h"
-
-void print_table() {
-	
-}
-
-void print_rows(int rows) {
-	int i = 0;
-}
+#include <ncurses.h>
+#include <string.h>
 
 int *get_max_column_width(int *cur_width, snapshot *file) {
 	pid_values *process;
@@ -24,4 +18,18 @@ int *get_max_column_width(int *cur_width, snapshot *file) {
 	}
 	*cur_width = i;
 	return cur_width;
+}
+
+void print_rows(int table_len, snapshot *file) {
+	pid_values *process;
+	unsigned int i = 0;
+	unsigned int pos = 0;
+	while(file->next) {
+		process = file->process;
+		mvprintw(i, pos + strlen(process->name),"%s ", process->name);
+		mvprintw(i, pos + strlen(process->pid),"%s ", process->name);
+		mvprintw(i, pos + strlen(process->stat),"%s ", process->name);
+		file = file->next;
+		i++;
+	}
 }
