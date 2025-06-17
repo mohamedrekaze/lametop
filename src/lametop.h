@@ -43,6 +43,8 @@ void add_tail(pid_values *process, snapshot *file);
 void constuct_file(pid_values *process, snapshot *file);
 void print_ll(snapshot *file);
 int *get_max_column_width(int *cur_width, snapshot *file);
+void ll_len(snapshot *file, int *len);
+void print_rows(int table_len, snapshot *file);
 
 
 /* macros */

@@ -5,10 +5,8 @@ obj = $(src:.c=.o)
 
 all: $(exec)
 
-$(exec): $(src)
-
 $(exec): $(obj)
-	cc -g $(obj) -o $(exec)
+	cc -g  $(obj) -lncurses -o $(exec)
 
 %.o: %.c $(header)
 	cc -c $< -o $@

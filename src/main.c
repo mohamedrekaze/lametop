@@ -26,7 +26,7 @@ void open_and_print_proc(const char *path) {
 	snapshot *first = malloc(sizeof(snapshot));
 	pid_values *process;
 	int len_ll = 0;
-	while((file = readdir(dir) ) != NULL) {
+	while((file = readdir(dir)) != NULL) {
 		full_path = construct_path(file);
 		if(full_path) {
 			process = get_field_value(full_path);
@@ -36,6 +36,7 @@ void open_and_print_proc(const char *path) {
 	first = first->next;
 	get_max_column_width(&i, first);
 	ll_len(first, &len_ll);
+	print_rows(len_ll, first);
 }
 
 int main() {
