@@ -61,7 +61,7 @@ char *read_stat(const char *path) {
 		}
 	}
 	line += j;
-	while(*line && *line != '\n') {
+	while(*line && *line != '\n' && *line != '/') {
 		if(i + 1 == token_len) {
 			token_tmp = token;
 			token_len *= 2;

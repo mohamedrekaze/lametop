@@ -6,7 +6,7 @@ obj = $(src:.c=.o)
 all: $(exec)
 
 $(exec): $(obj)
-	cc -g  $(obj) -lncurses -o $(exec)
+	cc -g $(obj) -lncurses -o $(exec)
 
 %.o: %.c $(header)
 	cc -c $< -o $@
