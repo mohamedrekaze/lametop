@@ -131,7 +131,7 @@ void add_tail(pid_values *process, snapshot *file) {
 }
 
 void print_ll(snapshot *file) {
-	while(file->next) {
+	while(file) {
 		pid_values *process = file->process;
 		printf("%p\t%s\t%s\t%s\n", 
 		 (char *)file->next, process->name, process->pid, process->stat);
@@ -140,8 +140,27 @@ void print_ll(snapshot *file) {
 }
 
 void ll_len(snapshot *file, int *len) {
-	while(file->next) {
+	while(file) {
 		(*len)++;
 		file = file->next;
 	}
+}
+
+void swap(void *l_a, void *l_b) {
+	void *tmp;
+	tmp = l_a;
+	l_a = l_b;
+	l_b = l_a;
+}
+
+void *ll_sort(snapshot *file, char *arg) {
+	snapshot *file_slow = file;
+	snapshot *file_fast = file;
+	unsigned int i = 0;
+	while(file_fast != NULL && file_fast->next != NULL) {
+		file_slow = file_slow->next;
+		file_fast = file_fast->next->next;
+	}
+	file_slow->next = NULL;
+	
 }
