@@ -153,14 +153,72 @@ void swap(void *l_a, void *l_b) {
 	l_b = l_a;
 }
 
-void *ll_sort(snapshot *file, char *arg) {
+snapshot *ll_sort(snapshot *file, char *arg) {
+	if(!file || !file->next) return file;
 	snapshot *file_slow = file;
 	snapshot *file_fast = file;
-	unsigned int i = 0;
-	while(file_fast != NULL && file_fast->next != NULL) {
+	snapshot *prev = NULL;
+	snapshot *right;
+	snapshot *left;
+	while(file_fast && file_fast->next) {
+		prev = file_slow;
 		file_slow = file_slow->next;
 		file_fast = file_fast->next->next;
 	}
-	file_slow->next = NULL;
+	if(prev)
+		prev->next = NULL;
+	left = file;
+	right = file_slow;
 	
+	left = ll_sort(left, arg);
+	right = ll_sort(right, arg);
+	return ll_merge(left, right, arg);
+}
+
+snapshot *ll_merge(snapshot *left, snapshot *right, char *arg) {
+	snapshot *new_file = NULL;
+	snapshot *head = NULL;
+	snapshot *tail = NULL;
+	snapshot *curr = NULL;
+	snapshot *rem;
+	int name_flag = strcmp(arg, "name");
+	int pid_flag = strcmp(arg, "pid");
+	int stat_flag = strcmp(arg, "stat");
+	int cmp_res;
+
+	while(left && right) {
+		if(name_flag == 0)
+			cmp_res = strcmp(left->process->name, right->process->name);
+		else if(pid_flag == 0)
+			cmp_res = strcmp(left->process->pid, right->process->pid);
+		else if(stat_flag == 0)
+			cmp_res = strcmp(left->process->stat, right->process->stat);
+		else
+			return NULL;
+		if(cmp_res <= 0) {
+			curr = left;
+			left = left->next;
+		}
+		else {
+			curr = right;
+			right = right->next;
+		}
+		curr->next = NULL;
+		if(!head) {
+			head = curr;
+			tail = curr;
+		}
+		else {
+			tail->next = curr;
+			tail = curr;
+		}
+	}
+	rem = (left != NULL) ? left : right;
+	if(tail) {
+		tail->next = rem;
+	}
+	else {
+		head = rem;
+	}
+	return head;
 }

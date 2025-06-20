@@ -35,9 +35,8 @@ void open_and_print_proc(const char *path) {
 	}
 	first = first->next;
 	get_max_column_width(&i, first);
-	ll_len(first, &len_ll);
 	//print_rows(len_ll, first);
-	ll_sort(first, "name");
+	snapshot *res = ll_sort(first, "name");
 }
 
 int main() {
