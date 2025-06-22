@@ -34,9 +34,10 @@ void open_and_print_proc(const char *path) {
 		}
 	}
 	first = first->next;
-	get_max_column_width(&i, first);
+	//get_max_column_width(&i, first);
 	//print_rows(len_ll, first);
-	snapshot *res = ll_sort(first, "name");
+	//snapshot *res = ll_sort(first, "name");
+	test_scroll();
 }
 
 int main() {

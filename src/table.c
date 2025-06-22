@@ -76,3 +76,57 @@ int col_max_width(snapshot *file, char *field) {
 	}
 	return len;
 }
+
+void get_xy() {
+	int rows;
+	int cols;
+	initscr();
+	getmaxyx(stdscr, rows, cols);
+	printw("%d %d", rows, cols);
+	refresh();
+	getch();
+	endwin();
+}
+
+void print_header(int cur_rows, int cur_ols) {
+	
+}
+
+void table_structure() {
+	
+}
+
+void test_scroll() {
+	initscr();
+	noecho();
+	keypad(stdscr, TRUE);
+	curs_set(0);
+
+	int pad_rows = 100;
+	int pad_cols = 50;
+	int i = 0;
+	int pad_top = 0;
+	int screen_r = 20;
+	int screen_c = 50;
+	int ch;
+	WINDOW *pad = newpad(pad_rows, pad_cols);
+
+	while(i < pad_rows) {
+		mvwprintw(pad, i, 0, "line %d", i);
+		i++;
+	}
+
+	prefresh(pad, pad_top, 0, 0, 0, screen_r - 1, screen_c - 1);
+	while((ch = getch()) != 'q') {
+		if(ch == KEY_UP) {
+			if(pad_top > 0)
+				pad_top--;
+		}
+		if(ch == KEY_DOWN) {
+			if(pad_top < pad_rows - screen_r)
+				pad_top++;
+		}
+		prefresh(pad, pad_top, 0, 0, 0, screen_r - 1, screen_c - 1);
+	}
+	endwin();
+}

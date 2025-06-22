@@ -185,7 +185,6 @@ snapshot *ll_merge(snapshot *left, snapshot *right, char *arg) {
 	int pid_flag = strcmp(arg, "pid");
 	int stat_flag = strcmp(arg, "stat");
 	int cmp_res;
-
 	while(left && right) {
 		if(name_flag == 0)
 			cmp_res = strcmp(left->process->name, right->process->name);
