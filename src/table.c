@@ -141,3 +141,24 @@ void test_scroll() {
 	delwin(win);
 	endwin();
 }
+
+//WINDOW *newwin(int nlines, int ncols, int begin_y, int begin_x);
+WINDOW *tables(char *arg) {
+	initscr();
+	if(strcmp(arg, "cpu")) {
+		WINDOW *win_cpu = newwin(COLS, (LINES / 5), 0, 0);
+		return win_cpu;
+	}
+	if(strcmp(arg, "mem")) {
+		WINDOW *win_mem = newwin(COLS, (LINES / 5), (LINES / 5) * 2,
+						   (COLS / 5) * 2);
+		return win_mem;
+	}
+	if(strcmp(arg, "proc")) {
+		WINDOW *win_proc = newwin(COLS, (LINES / 5), (LINES / 5) * 3,
+							(COLS / 5) * 3);
+		return win_proc;
+	}
+	else
+		return NULL;
+}
