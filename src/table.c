@@ -97,36 +97,47 @@ void table_structure() {
 }
 
 void test_scroll() {
-	initscr();
-	noecho();
-	keypad(stdscr, TRUE);
-	curs_set(0);
+	int WIN_HEIGHT = 30;
+	int WIN_WIDTH = 50;
+	int TOTAL_LINES = 50;
+	initscr();              // Initialize ncurses
+	noecho();               // Don't echo input
+	cbreak();               // Disable line buffering
+	keypad(stdscr, TRUE);   // Enable arrow keys
+	curs_set(0);            // Hide cursor
 
-	int pad_rows = 100;
-	int pad_cols = 50;
-	int i = 0;
-	int pad_top = 0;
-	int screen_r = 20;
-	int screen_c = 50;
+	WINDOW *win = newwin(WIN_HEIGHT, WIN_WIDTH, 1, 1);
+	scrollok(win, TRUE);
+
+	char lines[TOTAL_LINES][60];
+	for (int i = 0; i < TOTAL_LINES; ++i) {
+		sprintf(lines[i], "Line %d: This is sample content.", i + 1);
+	}
+
+	int top_line = 0;
 	int ch;
-	WINDOW *pad = newpad(pad_rows, pad_cols);
+	int i;
 
-	while(i < pad_rows) {
-		mvwprintw(pad, i, 0, "line %d", i);
-		i++;
+	while (1) {
+		i = 0;
+		werase(win);
+		box(win, 0, 0);
+		while (i < WIN_HEIGHT - 2 && (top_line + i) < TOTAL_LINES) {
+			mvwprintw(win, i + 1, 1, "%s", lines[top_line + i]);
+			++i;
+		}
+		wrefresh(win);
+
+		ch = getch();
+		if (ch == KEY_DOWN && top_line + WIN_HEIGHT - 2 < TOTAL_LINES) {
+			top_line++;
+		} else if (ch == KEY_UP && top_line > 0) {
+			top_line--;
+		} else if (ch == 'q') {
+			break;
+		}
 	}
 
-	prefresh(pad, pad_top, 0, 0, 0, screen_r - 1, screen_c - 1);
-	while((ch = getch()) != 'q') {
-		if(ch == KEY_UP) {
-			if(pad_top > 0)
-				pad_top--;
-		}
-		if(ch == KEY_DOWN) {
-			if(pad_top < pad_rows - screen_r)
-				pad_top++;
-		}
-		prefresh(pad, pad_top, 0, 0, 0, screen_r - 1, screen_c - 1);
-	}
+	delwin(win);
 	endwin();
 }
