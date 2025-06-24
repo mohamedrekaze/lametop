@@ -38,11 +38,10 @@ void open_and_print_proc(const char *path) {
 	first = first->next;
 	//get_max_column_width(&i, first);
 	//print_rows(len_ll, first);
-	//snapshot *res = ll_sort(first, "name");
+	snapshot *res = ll_sort(first, "name");
 	windows *frame = malloc(sizeof(windows));
-	memset(frame, 0, sizeof(windows));
 	tables(frame);
-	print_frame(frame);
+	print_frame(frame, res);
 	endwin();
 }
 

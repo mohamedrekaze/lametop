@@ -111,36 +111,47 @@ windows *tables(windows *win_frame) {
 	return win_frame;
 }
 
-void print_frame(windows *frame) {
+void print_frame(windows *frame, snapshot *file) {
 	clear();
 	refresh();
 	noecho();
 	cbreak();
 	keypad(stdscr, TRUE);
 	int ch;
+	snapshot *file_tmp = file;
+	pid_values *process;
+	int i = 1;
 
-	// Process window
-	box(frame->win_proc, 0, 0);
-	mvwprintw(frame->win_proc, 1, 1, "process");
-	wrefresh(frame->win_proc);
+	while(file_tmp) {
+		box(frame->win_proc, 0, 0);
+		mvwprintw(frame->win_proc, i, 1, "%s", file_tmp->process->name);
+		wrefresh(frame->win_proc);
+		file_tmp = file_tmp->next;
+		i++;
+	}
 
-	// CPU window
-	box(frame->win_cpu, 0, 0);
-	mvwprintw(frame->win_cpu, 1, 1, "cpu");
-	wrefresh(frame->win_cpu);
+	/*
+	file_tmp = file;
+	while(file_tmp) {
+		box(frame->win_cpu, 0, 0);
+		mvwprintw(frame->win_cpu, 1, 1, "cpu");
+		wrefresh(frame->win_cpu);
+		file_tmp = file_tmp->next;
+	}
 
-	// Memory window
-	box(frame->win_mem, 0, 0);
-	mvwprintw(frame->win_mem, 1, 1, "memory");
-	wrefresh(frame->win_mem);
+	file_tmp = file;
+	while(file_tmp) {
+		box(frame->win_mem, 0, 0);
+		mvwprintw(frame->win_mem, 1, 1, "memory");
+		wrefresh(frame->win_mem);
+		file_tmp = file_tmp->next;
+	}
+	*/
+
 	refresh();
-
-	wclear(frame->win_mem);
-	box(frame->win_mem, 0, 0);
-	mvwprintw(frame->win_mem, 1, 1, "memory");
-	wrefresh(frame->win_mem);
-
 	while(((ch = getch()) != KEY_F(1)) && ch != 'q') {
 		refresh();
 	}
 }
+
+

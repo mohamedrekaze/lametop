@@ -16,7 +16,6 @@
 #include <string.h>
 
 /* structs */
-
 typedef struct pid_values {
 	char *name;
 	char *stat;
@@ -58,7 +57,7 @@ snapshot *ll_merge(snapshot *left, snapshot *right, char *arg);
 void get_xy();
 windows *box_win();
 windows *tables(windows *win_frame);
-void print_frame(windows *frame);
+void print_frame(windows *frame, snapshot *file);
 
 
 /* macros */
