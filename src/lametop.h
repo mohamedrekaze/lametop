@@ -57,7 +57,8 @@ void swap(void *l_a, void *l_b);
 snapshot *ll_merge(snapshot *left, snapshot *right, char *arg);
 void get_xy();
 windows *box_win();
-windows *tables(char *arg);
+windows *tables(windows *win_frame);
+void print_frame(windows *frame);
 
 
 /* macros */

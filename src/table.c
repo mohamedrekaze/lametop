@@ -90,21 +90,57 @@ void get_xy() {
 }
 
 //WINDOW *newwin(int nlines, int ncols, int begin_y, int begin_x);
-windows *tables(char *arg) {
-	windows *win_frame = malloc(sizeof(windows));
+windows *tables(windows *win_frame) {
 	int cols_mid = (COLS / 2);
 	int lins_mid = (LINES / 2);
-	if(strcmp(arg, "mem") == 0) {
-		WINDOW *win_mem = newwin(10, cols_mid, 0, 0);
-		win_frame->win_mem = win_mem;
-	}
-	else if(strcmp(arg, "cpu") == 0) {
-		WINDOW *win_cpu = newwin(10, cols_mid, 0, cols_mid + 1);
-		win_frame->win_cpu = win_cpu;
-	}
-	else if(strcmp(arg, "proc") == 0) {
-		WINDOW *win_proc = newwin(LINES - 11, COLS, 10, 0);
-		win_frame->win_proc = win_proc;
+
+	WINDOW *win_mem = newwin(10, cols_mid, 0, 0);
+	win_frame->win_mem = win_mem;
+
+	WINDOW *win_cpu = newwin(10, cols_mid, 0, cols_mid);
+	win_frame->win_cpu = win_cpu;
+
+	WINDOW *win_proc = newwin(LINES - 11, COLS, 10, 0);
+	win_frame->win_proc = win_proc;
+
+	if(!win_frame->win_mem || !win_frame->win_proc || !win_frame->win_cpu) {
+		endwin();
+		fprintf(stderr, "newwin failed\n");
+		exit(1);
 	}
 	return win_frame;
+}
+
+void print_frame(windows *frame) {
+	clear();
+	refresh();
+	noecho();
+	cbreak();
+	keypad(stdscr, TRUE);
+	int ch;
+
+	// Process window
+	box(frame->win_proc, 0, 0);
+	mvwprintw(frame->win_proc, 1, 1, "process");
+	wrefresh(frame->win_proc);
+
+	// CPU window
+	box(frame->win_cpu, 0, 0);
+	mvwprintw(frame->win_cpu, 1, 1, "cpu");
+	wrefresh(frame->win_cpu);
+
+	// Memory window
+	box(frame->win_mem, 0, 0);
+	mvwprintw(frame->win_mem, 1, 1, "memory");
+	wrefresh(frame->win_mem);
+	refresh();
+
+	wclear(frame->win_mem);
+	box(frame->win_mem, 0, 0);
+	mvwprintw(frame->win_mem, 1, 1, "memory");
+	wrefresh(frame->win_mem);
+
+	while(((ch = getch()) != KEY_F(1)) && ch != 'q') {
+		refresh();
+	}
 }
