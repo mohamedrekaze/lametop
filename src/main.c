@@ -1,4 +1,5 @@
 #include "lametop.h"
+#include <ncurses.h>
 #include <stdatomic.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -36,8 +37,7 @@ void open_and_print_proc(const char *path) {
 	first = first->next;
 	//get_max_column_width(&i, first);
 	//print_rows(len_ll, first);
-	snapshot *res = ll_sort(first, "name");
-	//test_scroll();
+	//snapshot *res = ll_sort(first, "name");
 }
 
 int main() {

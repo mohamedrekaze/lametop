@@ -1,6 +1,7 @@
 #include "lametop.h"
 #include <ncurses.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 int *get_max_column_width(int *cur_width, snapshot *file) {
@@ -88,77 +89,22 @@ void get_xy() {
 	endwin();
 }
 
-void print_header(int cur_rows, int cur_ols) {
-	
-}
-
-void table_structure() {
-	
-}
-
-void test_scroll() {
-	int WIN_HEIGHT = 30;
-	int WIN_WIDTH = 50;
-	int TOTAL_LINES = 50;
-	initscr();              // Initialize ncurses
-	noecho();               // Don't echo input
-	cbreak();               // Disable line buffering
-	keypad(stdscr, TRUE);   // Enable arrow keys
-	curs_set(0);            // Hide cursor
-
-	WINDOW *win = newwin(WIN_HEIGHT, WIN_WIDTH, 1, 1);
-	scrollok(win, TRUE);
-
-	char lines[TOTAL_LINES][60];
-	for (int i = 0; i < TOTAL_LINES; ++i) {
-		sprintf(lines[i], "Line %d: This is sample content.", i + 1);
-	}
-
-	int top_line = 0;
-	int ch;
-	int i;
-
-	while (1) {
-		i = 0;
-		werase(win);
-		box(win, 0, 0);
-		while (i < WIN_HEIGHT - 2 && (top_line + i) < TOTAL_LINES) {
-			mvwprintw(win, i + 1, 1, "%s", lines[top_line + i]);
-			++i;
-		}
-		wrefresh(win);
-
-		ch = getch();
-		if (ch == KEY_DOWN && top_line + WIN_HEIGHT - 2 < TOTAL_LINES) {
-			top_line++;
-		} else if (ch == KEY_UP && top_line > 0) {
-			top_line--;
-		} else if (ch == 'q') {
-			break;
-		}
-	}
-
-	delwin(win);
-	endwin();
-}
-
 //WINDOW *newwin(int nlines, int ncols, int begin_y, int begin_x);
-WINDOW *tables(char *arg) {
-	initscr();
-	if(strcmp(arg, "cpu")) {
-		WINDOW *win_cpu = newwin(COLS, (LINES / 5), 0, 0);
-		return win_cpu;
+windows *tables(char *arg) {
+	windows *win_frame = malloc(sizeof(windows));
+	int cols_mid = (COLS / 2);
+	int lins_mid = (LINES / 2);
+	if(strcmp(arg, "mem") == 0) {
+		WINDOW *win_mem = newwin(10, cols_mid, 0, 0);
+		win_frame->win_mem = win_mem;
 	}
-	if(strcmp(arg, "mem")) {
-		WINDOW *win_mem = newwin(COLS, (LINES / 5), (LINES / 5) * 2,
-						   (COLS / 5) * 2);
-		return win_mem;
+	else if(strcmp(arg, "cpu") == 0) {
+		WINDOW *win_cpu = newwin(10, cols_mid, 0, cols_mid + 1);
+		win_frame->win_cpu = win_cpu;
 	}
-	if(strcmp(arg, "proc")) {
-		WINDOW *win_proc = newwin(COLS, (LINES / 5), (LINES / 5) * 3,
-							(COLS / 5) * 3);
-		return win_proc;
+	else if(strcmp(arg, "proc") == 0) {
+		WINDOW *win_proc = newwin(LINES - 11, COLS, 10, 0);
+		win_frame->win_proc = win_proc;
 	}
-	else
-		return NULL;
+	return win_frame;
 }

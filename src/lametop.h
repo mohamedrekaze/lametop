@@ -23,6 +23,12 @@ typedef struct pid_values {
 	char *pid;
 } pid_values;
 
+typedef struct windows {
+	WINDOW *win_proc;
+	WINDOW *win_mem;
+	WINDOW *win_cpu;
+} windows;
+
 typedef struct snapshot snapshot;
 typedef struct snapshot {
 	pid_values *process;
@@ -50,7 +56,8 @@ snapshot *ll_sort(snapshot *file, char *arg);
 void swap(void *l_a, void *l_b);
 snapshot *ll_merge(snapshot *left, snapshot *right, char *arg);
 void get_xy();
-void test_scroll();
+windows *box_win();
+windows *tables(char *arg);
 
 
 /* macros */
