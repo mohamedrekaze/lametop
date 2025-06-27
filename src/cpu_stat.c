@@ -67,11 +67,9 @@ int* cpu_usage(cpu_stat* snap) {
 	static int first = 1;
 	static long long last_total = 0, last_idle = 0;
 	int* usage = malloc(sizeof(int));
-
 	long long total = snap->user + snap->nice + snap->system + snap->idle +
 		snap->iowait + snap->irq + snap->softirq + snap->steal;
 	long long idle = snap->idle + snap->iowait;
-
 	if (first) {
 		first = 0;
 		last_total = total;
@@ -82,7 +80,6 @@ int* cpu_usage(cpu_stat* snap) {
 		long long delta_idle = idle - last_idle;
 		last_total = total;
 		last_idle = idle;
-
 		*usage = delta_total ? (100 * (delta_total - delta_idle)) / delta_total : 0;
 	}
 	return usage;
