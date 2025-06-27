@@ -5,23 +5,36 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
+int *cpu_stat_orch(struct dirent *file) {
+	const char *path = stat_file_path(file);
+	if(!path) return NULL;
+	const char *stat_file = read_stat(path);
+	free((void *)path);
+	if(!stat_file) return NULL;
+	cpu_stat *stat = parse_cpu_stat(stat_file);
+	printf("%ld\n", stat->user);
+	free((void *)stat_file);
+	if(!stat) return NULL;
+	int *usage1 = cpu_usage(stat);  // First call (initializes)
+}
 
 char *stat_file_path(struct dirent *file) {
 	int path_len = NAME_MAX + 10; 
 	char *stat_path = malloc(sizeof(char) * path_len);
 	if(stat_path) {
 		snprintf(stat_path, path_len, "/proc/%s", file->d_name);
-		parse_cpu_stat(stat_path);
 		return stat_path;
 	}
 	return NULL;
 }
 
-cpu_stat *parse_cpu_stat(const char *path) {
+cpu_stat *parse_cpu_stat(const char *file) {
 	int i = 0;
 	long val = 0;
 	int x = 0;
-	char *file = read_stat(path);
 	cpu_stat *snap = malloc(sizeof(cpu_stat));
 	while(!isdigit(file[i])) i++;
 	while(file[i] != '\n' && x < 10) {
@@ -45,36 +58,30 @@ cpu_stat *parse_cpu_stat(const char *path) {
 		x++;
 		while(file[i] == ' ') i++;
 	}
-	cpu_usage(snap);
 	return snap;
 }
 
-int cpu_usage(cpu_stat *snap) {
-	static int first_read = 1;
-	static long long prev_total = 0;
-	static long long prev_idle = 0;
+int* cpu_usage(cpu_stat* snap) {
+    static int first = 1;
+    static long long last_total = 0, last_idle = 0;
+    int* usage = malloc(sizeof(int));
+    
+    long long total = snap->user + snap->nice + snap->system + snap->idle +
+                     snap->iowait + snap->irq + snap->softirq + snap->steal;
+    long long idle = snap->idle + snap->iowait;
 
-	long long cur_total = snap->user + snap->nice + snap->system + snap->idle
-		+ snap->iowait + snap->irq + snap->softirq + snap->steal;
-	long long cur_idle = snap->idle + snap->iowait;
-
-	if (first_read) {
-		prev_total = cur_total;
-		prev_idle = cur_idle;
-		first_read = 0;
-		return 0;
-	}
-
-	long long delta_total = cur_total - prev_total;
-	long long delta_idle = cur_idle - prev_idle;
-
-	prev_total = cur_total;
-	prev_idle = cur_idle;
-
-	if (delta_total == 0) return 0;
-
-	int total_cpu_usage = (int)(100.0 * (delta_total - delta_idle) / delta_total);
-	return total_cpu_usage;
+    if (first) {
+        first = 0;
+        last_total = total;
+        last_idle = idle;
+        *usage = 0;
+    } else {
+        long long delta_total = total - last_total;
+        long long delta_idle = idle - last_idle;
+        last_total = total;
+        last_idle = idle;
+        
+        *usage = delta_total ? (100 * (delta_total - delta_idle)) / delta_total : 0;
+    }
+    return usage;
 }
-
-

@@ -42,9 +42,6 @@ typedef struct windows {
 } windows;
 
 typedef struct snapshot snapshot;
-
-
-
 typedef struct snapshot {
 	pid_values *process;
 	snapshot *next;
@@ -75,8 +72,9 @@ windows *box_win();
 windows *tables(windows *win_frame);
 void print_frame(windows *frame, snapshot *file);
 char *stat_file_path(struct dirent *file);
-cpu_stat *parse_cpu_stat(const char *path);
-int cpu_usage(cpu_stat *snap);
+cpu_stat *parse_cpu_stat(const char *file);
+int *cpu_usage(cpu_stat *snap);
+int *cpu_stat_orch(struct dirent *file);
 
 /* macros */
 #define fields_num 3
