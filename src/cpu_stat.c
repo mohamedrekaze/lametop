@@ -11,14 +11,16 @@
 int *cpu_stat_orch(struct dirent *file) {
 	const char *path = stat_file_path(file);
 	if(!path) return NULL;
-	const char *stat_file = read_stat(path);
-	free((void *)path);
+	char *stat_file = read_stat(path);
+	free((void*)path);
 	if(!stat_file) return NULL;
 	cpu_stat *stat = parse_cpu_stat(stat_file);
-	printf("%ld\n", stat->user);
-	free((void *)stat_file);
+	free(stat_file);
 	if(!stat) return NULL;
-	int *usage1 = cpu_usage(stat);  // First call (initializes)
+	int *usage = cpu_usage(stat);
+	free(stat);
+	printf("%d\n", *usage);
+	return usage;
 }
 
 char *stat_file_path(struct dirent *file) {
@@ -62,26 +64,26 @@ cpu_stat *parse_cpu_stat(const char *file) {
 }
 
 int* cpu_usage(cpu_stat* snap) {
-    static int first = 1;
-    static long long last_total = 0, last_idle = 0;
-    int* usage = malloc(sizeof(int));
-    
-    long long total = snap->user + snap->nice + snap->system + snap->idle +
-                     snap->iowait + snap->irq + snap->softirq + snap->steal;
-    long long idle = snap->idle + snap->iowait;
+	static int first = 1;
+	static long long last_total = 0, last_idle = 0;
+	int* usage = malloc(sizeof(int));
 
-    if (first) {
-        first = 0;
-        last_total = total;
-        last_idle = idle;
-        *usage = 0;
-    } else {
-        long long delta_total = total - last_total;
-        long long delta_idle = idle - last_idle;
-        last_total = total;
-        last_idle = idle;
-        
-        *usage = delta_total ? (100 * (delta_total - delta_idle)) / delta_total : 0;
-    }
-    return usage;
+	long long total = snap->user + snap->nice + snap->system + snap->idle +
+		snap->iowait + snap->irq + snap->softirq + snap->steal;
+	long long idle = snap->idle + snap->iowait;
+
+	if (first) {
+		first = 0;
+		last_total = total;
+		last_idle = idle;
+		*usage = 0;
+	} else {
+		long long delta_total = total - last_total;
+		long long delta_idle = idle - last_idle;
+		last_total = total;
+		last_idle = idle;
+
+		*usage = delta_total ? (100 * (delta_total - delta_idle)) / delta_total : 0;
+	}
+	return usage;
 }

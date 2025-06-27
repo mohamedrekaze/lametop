@@ -30,10 +30,12 @@ void open_and_print_proc(const char *path) {
 	int len_ll = 0;
 	while((file = readdir(dir)) != NULL) {
 		if(strcmp(file->d_name, "stat") == 0) {
+			/*
 			while(1) {
-				int *res = cpu_stat_orch(file);  // Second call — returns delta
-				usleep(100);
+				int *res = cpu_stat_orch(file);
+				sleep(2);
 			}
+			*/
 		}
 		full_path = construct_path(file);
 		if(full_path) {
