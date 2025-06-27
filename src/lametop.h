@@ -16,6 +16,19 @@
 #include <string.h>
 
 /* structs */
+typedef struct cpu_stat {
+	long user;
+	long nice;
+	long system;
+	long idle;
+	long iowait;
+	long irq;
+	long softirq;
+	long steal;
+	long guest;
+	long guest_nice;
+} cpu_stat;
+
 typedef struct pid_values {
 	char *name;
 	char *stat;
@@ -29,6 +42,9 @@ typedef struct windows {
 } windows;
 
 typedef struct snapshot snapshot;
+
+
+
 typedef struct snapshot {
 	pid_values *process;
 	snapshot *next;
@@ -58,7 +74,9 @@ void get_xy();
 windows *box_win();
 windows *tables(windows *win_frame);
 void print_frame(windows *frame, snapshot *file);
-
+char *stat_file_path(struct dirent *file);
+cpu_stat *parse_cpu_stat(const char *path);
+int cpu_usage(cpu_stat *snap);
 
 /* macros */
 #define fields_num 3

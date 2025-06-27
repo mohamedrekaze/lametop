@@ -18,7 +18,7 @@ void constuct_file(pid_values *process, snapshot *file) {
 }
 
 void open_and_print_proc(const char *path) {
-	initscr();
+	//initscr();
 	DIR *dir = opendir("/proc/");
 	struct dirent *file;
 	size_t buff_size = 1000;
@@ -29,6 +29,9 @@ void open_and_print_proc(const char *path) {
 	pid_values *process;
 	int len_ll = 0;
 	while((file = readdir(dir)) != NULL) {
+		if(strcmp(file->d_name, "stat") == 0) {
+			stat_file_path(file);
+		}
 		full_path = construct_path(file);
 		if(full_path) {
 			process = get_field_value(full_path);
@@ -36,14 +39,18 @@ void open_and_print_proc(const char *path) {
 		}
 	}
 	first = first->next;
-	//get_max_column_width(&i, first);
-	//print_rows(len_ll, first);
+	/*
+	get_max_column_width(&i, first);
+	print_rows(len_ll, first);
 	snapshot *res = ll_sort(first, "name");
 	windows *frame = malloc(sizeof(windows));
 	tables(frame);
 	print_frame(frame, res);
 	endwin();
+	*/
 }
+
+
 
 int main() {
 	const char *path = "/proc/";
