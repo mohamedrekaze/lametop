@@ -19,7 +19,6 @@ int *cpu_stat_orch(struct dirent *file) {
 	if(!stat) return NULL;
 	int *usage = cpu_usage(stat);
 	free(stat);
-	printf("%d\n", *usage);
 	return usage;
 }
 

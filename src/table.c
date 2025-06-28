@@ -1,8 +1,66 @@
 #include "lametop.h"
+#include <dirent.h>
 #include <ncurses.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+int win_orch(snapshot *file, windows *wind, struct dirent *stat_file) {
+	initscr(); clear(); refresh();
+	noecho(); cbreak(); keypad(stdscr, TRUE);
+	if(!file || !wind || !stat_file) {
+		fprintf(stderr, "error with win_orch params\n");
+		return 1;
+	}
+	windows *table = tables(wind);
+	if(table) {
+		free((void *)wind);
+	}
+	else {
+		free((void *)wind);
+		free((void *)table);
+		endwin();
+		printf("table error\n");
+		return 1;
+	}
+	int *res = cpu_stat_orch(stat_file);
+	if(!res) {
+		endwin();
+		printf("res error\n");
+		return 1;
+	}
+	print_frame(table, file);
+	cpu_usage_widget((unsigned int)*res, table->win_cpu);
+	endwin();
+}
+
+void cpu_usage_widget(unsigned int usage, WINDOW *win_cpu) {
+	int i = 0;
+	int width, height;
+	getmaxyx(win_cpu, height, width);
+	int MaxBarWidth = width - 4;
+	int BarLength = usage * MaxBarWidth / 100;
+	int x = 2;
+	int y = 2;
+	while(i < MaxBarWidth) {
+		/*
+		use this to print the windows change them accordinly
+		box(frame->win_proc, 0, 0);
+		mvwprintw(frame->win_proc, i, 1, "%s", file_tmp->process->name);
+		wrefresh(frame->win_proc);
+		*/
+		if(i < BarLength) {
+			mvwaddch(win_cpu, y, x + i, '|');
+		}
+		else {
+			mvwaddch(win_cpu, y, x + i, ' ');
+		}
+		i++;
+	}
+	mvwprintw(win_cpu, 1, 2, "CPU Usage: %3u%%", usage);
+	box(win_cpu, 0, 0);
+	wrefresh(win_cpu);
+}
 
 int *get_max_column_width(int *cur_width, snapshot *file) {
 	pid_values *process;
@@ -112,11 +170,6 @@ windows *tables(windows *win_frame) {
 }
 
 void print_frame(windows *frame, snapshot *file) {
-	clear();
-	refresh();
-	noecho();
-	cbreak();
-	keypad(stdscr, TRUE);
 	int ch;
 	snapshot *file_tmp = file;
 	pid_values *process;
@@ -130,7 +183,6 @@ void print_frame(windows *frame, snapshot *file) {
 		i++;
 	}
 
-	/*
 	file_tmp = file;
 	while(file_tmp) {
 		box(frame->win_cpu, 0, 0);
@@ -146,12 +198,9 @@ void print_frame(windows *frame, snapshot *file) {
 		wrefresh(frame->win_mem);
 		file_tmp = file_tmp->next;
 	}
-	*/
 
 	refresh();
 	while(((ch = getch()) != KEY_F(1)) && ch != 'q') {
 		refresh();
 	}
 }
-
-
