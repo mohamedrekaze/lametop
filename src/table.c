@@ -6,7 +6,6 @@
 
 void	print_initial_frame(windows *table)
 {
-	// res = cpu_stat_orch(stat_file);
 	box(table->win_proc, 0, 0);
 	box(table->win_cpu, 0, 0);
 	box(table->win_mem, 0, 0);
@@ -17,8 +16,6 @@ void	print_initial_frame(windows *table)
 	wrefresh(table->win_cpu);
 	wrefresh(table->win_mem);
 	refresh();
-	//sleep(3);
-	//wclear(stdscr);
 }
 
 int	win_orch(snapshot *file, windows *wind, struct dirent *stat_file)
@@ -38,122 +35,11 @@ int	win_orch(snapshot *file, windows *wind, struct dirent *stat_file)
 		return (1);
 	}
 	table = tables(wind);
-	//print_initial_frame(table);
 	print_frame(table, file);
 	endwin();
 	return (0);
 }
 
-int	*get_max_column_width(int *cur_width, snapshot *file)
-{
-	pid_values	*process;
-	int			i;
-	int			len;
-
-	i = 0;
-	len = 0;
-	while (file)
-	{
-		process = file->process;
-		if ((len = strlen(process->name)) > i)
-			i = len;
-		if ((len = strlen(process->pid)) > i)
-			i = len;
-		if ((len = strlen(process->stat)) > i)
-			i = len;
-		file = file->next;
-	}
-	*cur_width = i;
-	return (cur_width);
-}
-
-void	print_rows(int table_len, snapshot *file)
-{
-	pid_values		*process;
-	unsigned int	i;
-	unsigned int	pos;
-	unsigned int	bufr;
-	int				len_field_name;
-	int				len_field_pid;
-	int				len_field_stat;
-	int				ch;
-
-	initscr();
-	keypad(stdscr, TRUE);
-	noecho();
-	cbreak();
-	i = 0;
-	pos = 0;
-	bufr = 1;
-	len_field_name = col_max_width(file, "name");
-	len_field_pid = col_max_width(file, "pid");
-	len_field_stat = col_max_width(file, "stat");
-	while (file)
-	{
-		pos = 0;
-		process = file->process;
-		mvprintw(i, pos, "%s", "|");
-		mvprintw(i, pos += bufr, "%s", process->name);
-		mvprintw(i, pos += len_field_name, "%s", "|");
-		mvprintw(i, pos += bufr, "%s", process->pid);
-		mvprintw(i, pos += len_field_pid, "%s", "|");
-		mvprintw(i, pos += bufr, "%s", process->stat);
-		mvprintw(i, pos += len_field_stat, "%s", "|");
-		file = file->next;
-		i++;
-	}
-	while (((ch = getch()) != KEY_F(1)) && ch != 'q')
-	{
-		refresh();
-	}
-	endwin();
-}
-
-int	col_max_width(snapshot *file, char *field)
-{
-	pid_values	*process;
-	int			len;
-	int			cur_len;
-
-	len = 0;
-	cur_len = 0;
-	while (file)
-	{
-		process = file->process;
-		if (strcmp("name", field) == 0)
-		{
-			if ((cur_len = strlen(process->name)) > len)
-				len = cur_len;
-		}
-		if (strcmp("pid", field) == 0)
-		{
-			if ((cur_len = strlen(process->pid)) > len)
-				len = cur_len;
-		}
-		if (strcmp("stat", field) == 0)
-		{
-			if ((cur_len = strlen(process->stat)) > len)
-				len = cur_len;
-		}
-		file = file->next;
-	}
-	return (len);
-}
-
-void	get_xy(void)
-{
-	int	rows;
-	int	cols;
-
-	initscr();
-	getmaxyx(stdscr, rows, cols);
-	printw("%d %d", rows, cols);
-	refresh();
-	getch();
-	endwin();
-}
-
-// WINDOW *newwin(int nlines, int ncols, int begin_y, int begin_x);
 windows	*tables(windows *win_frame)
 {
 	int		cols_mid;
@@ -223,7 +109,6 @@ void	print_frame(windows *frame, snapshot *file)
 	snapshot	*file_tmp;
 	pid_values	*process;
 	int			i;
-
 	if (!file || !frame) {
 		error_log("print_frame: linked list null");
 		return;
@@ -234,14 +119,11 @@ void	print_frame(windows *frame, snapshot *file)
 	}
 	file_tmp = file;
 	i = 0;
-
-	while (file_tmp->next)
-	{
+	while (file_tmp->next) {
 		file_tmp = file_tmp->next;
 		i++;
 	}
-	while (((ch = getch()) != KEY_F(1)) && ch != 'q')
-	{
+	while (((ch = getch()) != KEY_F(1)) && ch != 'q') {
 		refresh();
 	}
 }
