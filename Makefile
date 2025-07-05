@@ -2,20 +2,23 @@ header = src/lametop.h
 exec = lametop
 src = $(wildcard src/*.c)
 obj = $(src:.c=.o)
+cflags = -g 
+ldflags = -lncurses 
+#debflags = -fsanitize=address
 
 all: $(exec)
 
 $(exec): $(obj)
-	cc -g $(obj) -lncurses -o $(exec)
+	cc $(obj) $(ldflags) -o $(exec)
 
 %.o: %.c $(header)
-	cc -c $< -o $@
+	cc $(cflags) -c $< -o $@
 
 clean: 
 	rm $(obj)
 
 fclean: 
-	rm $(obj) $(exec)
+	rm -f $(obj) $(exec)
 
 re: clean all
 

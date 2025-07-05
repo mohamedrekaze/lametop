@@ -3,6 +3,7 @@
 #include <dirent.h>
 #include <fcntl.h>
 #include <linux/limits.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -220,4 +221,12 @@ snapshot *ll_merge(snapshot *left, snapshot *right, char *arg) {
 		head = rem;
 	}
 	return head;
+}
+
+void error_log(char *error) {
+	FILE *log = fopen("error.log", "w");
+	if (log) {
+		fprintf(log, "%s\n", error);
+		fclose(log);
+	}
 }

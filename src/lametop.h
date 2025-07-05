@@ -77,6 +77,7 @@ int *cpu_usage(cpu_stat *snap);
 int *cpu_stat_orch(struct dirent *file);
 int win_orch(snapshot *file, windows *wind, struct dirent *stat_file);
 void cpu_usage_widget(unsigned int usage, WINDOW *win_cpu);
+void error_log(char *error);
 
 /* macros */
 #define fields_num 3
