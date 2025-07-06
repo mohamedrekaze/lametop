@@ -20,19 +20,20 @@ void	print_initial_frame(windows *table) {
 int	win_orch(snapshot *file, windows *wind, int *cpu_usage) {
 	windows	*table;
 	int		*res;
+
 	initscr();
 	clear();
 	refresh();
 	noecho();
 	cbreak();
 	keypad(stdscr, TRUE);
+
 	if (!file || !wind) {
 		error_log("error with win_orch params\n");
 		return (1);
 	}
 	table = tables(wind);
 	print_frame(table, file, *cpu_usage);
-	clear();
 	endwin();
 	return (0);
 }
@@ -43,8 +44,8 @@ windows	*tables(windows *win_frame) {
 	WINDOW	*win_mem;
 	WINDOW	*win_cpu;
 	WINDOW	*win_proc;
-	if (LINES < 12 || COLS < 4)
-	{
+
+	if (LINES < 12 || COLS < 4) {
 		error_log("tables: terminal size too small\n");
 		return (0);
 	}
@@ -53,8 +54,7 @@ windows	*tables(windows *win_frame) {
 	win_mem = newwin(10, cols_mid, 0, 0);
 	win_cpu = newwin(10, cols_mid, 0, cols_mid);
 	win_proc = newwin(LINES - 11, COLS, 10, 0);
-	if (!win_mem || !win_cpu || !win_proc)
-	{
+	if (!win_mem || !win_cpu || !win_proc) {
 		error_log("tables: window creation failed\n");
 		return (0);
 	}
@@ -70,41 +70,42 @@ void	cpu_usage_widget(unsigned int usage, WINDOW *win_cpu) {
 	int	BarLength;
 	int	x;
 	int	y;
-	int	width;
-	int	height;
 	i = 0;
+	int width, height;
 	getmaxyx(win_cpu, height, width);
-	MaxBarWidth = width - 20;
+	MaxBarWidth = 30;
 	BarLength = (usage * MaxBarWidth) / 100;
-	x = 1;
-	y = 1;
-	mvwprintw(win_cpu, x, y, "%s", "CPU");
-	y += strlen("CPU") + 1;
-	mvwprintw(win_cpu, x, y, "%c", '[');
-	y++;
-	while (i <= MaxBarWidth - 1) {
-		if(i < BarLength)
-			mvwprintw(win_cpu, x, y, "%c", '*');
-		else if (i == MaxBarWidth - 1)
-			mvwprintw(win_cpu, x, y, "%c", ']');
+	x = 2;
+	y = 2;
+	wrefresh(win_cpu);
+	mvwprintw(win_cpu, x, i+1, "%c", '|');
+	while (i < MaxBarWidth) {
+		/*
+		if(i == 1) {
+			mvwprintw(win_cpu, x, i, "%c", '[');
+			i++;
+		}
+		*/
+		if (i < BarLength) {
+			mvwprintw(win_cpu, x, i+1, "%c", '|');
+		}
 		wrefresh(win_cpu);
-		y++;
 		i++;
 	}
-	mvwprintw(win_cpu, x, y, " %d%%", usage);
+	i++;
+	//mvwprintw(win_cpu, x, i, "%c", ']');
 	wrefresh(win_cpu);
 }
 
-void	print_frame(windows *frame, snapshot *file, unsigned int usage)
-{
+void	print_frame(windows *frame, snapshot *file, unsigned int usage) {
+	print_initial_frame(frame);
 	int			ch;
 	snapshot	*file_tmp;
 	pid_values	*process;
 	int			i;
-	print_initial_frame(frame);
 	if (!file || !frame) {
 		error_log("print_frame: linked list null");
-		return ;
+		return;
 	}
 	if (!frame->win_proc || !frame->win_cpu || !frame->win_mem) {
 		error_log("print_frame: frame elements null");

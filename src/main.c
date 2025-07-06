@@ -39,22 +39,17 @@ void	open_and_print_proc(const char *path)
 	buff = malloc(sizeof(char) * buff_size);
 	i = 0;
 	first = malloc(sizeof(snapshot));
-	while ((file = readdir(dir)) != NULL)
-	{
-		if (strcmp(file->d_name, "stat") == 0)
-		{
+	while ((file = readdir(dir)) != NULL) {
+		if (strcmp(file->d_name, "stat") == 0) {
 			stat_file = file;
 			cp_usage = cpu_stat_orch(stat_file);
-			if (!*cp_usage)
-			{
+			if (!*cp_usage) {
 				sleep(1);
 				cp_usage = cpu_stat_orch(stat_file);
-				printf("%d\n", *cp_usage);
 			}
 		}
 		full_path = construct_path(file);
-		if (full_path)
-		{
+		if (full_path) {
 			process = get_field_value(full_path);
 			constuct_file(process, first);
 		}
@@ -68,6 +63,5 @@ void	open_and_print_proc(const char *path)
 int	main(void)
 {
 	const char	*path = "/proc/";
-
 	open_and_print_proc(path);
 }
