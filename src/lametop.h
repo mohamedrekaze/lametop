@@ -66,12 +66,12 @@ void swap(void *l_a, void *l_b);
 snapshot *ll_merge(snapshot *left, snapshot *right, char *arg);
 windows *box_win();
 windows *tables(windows *win_frame);
-void print_frame(windows *frame, snapshot *file);
+void print_frame(windows *frame, snapshot *file, unsigned int usage);
 char *stat_file_path(struct dirent *file);
 cpu_stat *parse_cpu_stat(const char *file);
 int *cpu_usage(cpu_stat *snap);
 int *cpu_stat_orch(struct dirent *file);
-int win_orch(snapshot *file, windows *wind, struct dirent *stat_file);
+int	win_orch(snapshot *file, windows *wind ,int *usage);
 void cpu_usage_widget(unsigned int usage, WINDOW *win_cpu);
 void error_log(char *error);
 

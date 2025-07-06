@@ -32,6 +32,7 @@ void	open_and_print_proc(const char *path)
 	pid_values		*process;
 	snapshot		*res;
 	windows			*frame;
+	static int		*cp_usage;
 
 	dir = opendir("/proc/");
 	buff_size = 1000;
@@ -43,6 +44,13 @@ void	open_and_print_proc(const char *path)
 		if (strcmp(file->d_name, "stat") == 0)
 		{
 			stat_file = file;
+			cp_usage = cpu_stat_orch(stat_file);
+			if (!*cp_usage)
+			{
+				sleep(1);
+				cp_usage = cpu_stat_orch(stat_file);
+				printf("%d\n", *cp_usage);
+			}
 		}
 		full_path = construct_path(file);
 		if (full_path)
@@ -54,7 +62,7 @@ void	open_and_print_proc(const char *path)
 	first = first->next;
 	res = ll_sort(first, "name");
 	frame = malloc(sizeof(windows));
-	win_orch(res, frame, stat_file);
+	win_orch(res, frame, cp_usage);
 }
 
 int	main(void)

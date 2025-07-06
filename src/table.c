@@ -4,8 +4,7 @@
 #include <string.h>
 #include <unistd.h>
 
-void	print_initial_frame(windows *table)
-{
+void	print_initial_frame(windows *table) {
 	box(table->win_proc, 0, 0);
 	box(table->win_cpu, 0, 0);
 	box(table->win_mem, 0, 0);
@@ -18,8 +17,7 @@ void	print_initial_frame(windows *table)
 	refresh();
 }
 
-int	win_orch(snapshot *file, windows *wind, struct dirent *stat_file)
-{
+int	win_orch(snapshot *file, windows *wind, int *cpu_usage) {
 	windows	*table;
 	int		*res;
 
@@ -29,27 +27,25 @@ int	win_orch(snapshot *file, windows *wind, struct dirent *stat_file)
 	noecho();
 	cbreak();
 	keypad(stdscr, TRUE);
-	if (!file || !wind || !stat_file)
-	{
+
+	if (!file || !wind) {
 		error_log("error with win_orch params\n");
 		return (1);
 	}
 	table = tables(wind);
-	print_frame(table, file);
+	print_frame(table, file, *cpu_usage);
 	endwin();
 	return (0);
 }
 
-windows	*tables(windows *win_frame)
-{
+windows	*tables(windows *win_frame) {
 	int		cols_mid;
 	int		lins_mid;
 	WINDOW	*win_mem;
 	WINDOW	*win_cpu;
 	WINDOW	*win_proc;
 
-	if (LINES < 12 || COLS < 4)
-	{
+	if (LINES < 12 || COLS < 4) {
 		error_log("tables: terminal size too small\n");
 		return (0);
 	}
@@ -58,8 +54,7 @@ windows	*tables(windows *win_frame)
 	win_mem = newwin(10, cols_mid, 0, 0);
 	win_cpu = newwin(10, cols_mid, 0, cols_mid);
 	win_proc = newwin(LINES - 11, COLS, 10, 0);
-	if (!win_mem || !win_cpu || !win_proc)
-	{
+	if (!win_mem || !win_cpu || !win_proc) {
 		error_log("tables: window creation failed\n");
 		return (0);
 	}
@@ -69,41 +64,37 @@ windows	*tables(windows *win_frame)
 	return (win_frame);
 }
 
-void	cpu_usage_widget(unsigned int usage, WINDOW *win_cpu)
-{
+void	cpu_usage_widget(unsigned int usage, WINDOW *win_cpu) {
 	int	i;
 	int	MaxBarWidth;
 	int	BarLength;
 	int	x;
 	int	y;
-
 	i = 1;
 	int width, height;
 	getmaxyx(win_cpu, height, width);
-	MaxBarWidth = width - 4;
-	BarLength = usage * MaxBarWidth / 100;
+	MaxBarWidth = 100;
+	BarLength = (usage * MaxBarWidth) / 100;
 	x = 2;
 	y = 2;
-	while (i < MaxBarWidth)
-	{
-		if (i < BarLength)
-		{
-			mvwprintw(win_cpu, 1, i, "%c", '|');
-			wrefresh(win_cpu);
-			// mvwaddch(win_cpu, y, x + i, '|');
+	//wclear(win_cpu);
+	wrefresh(win_cpu);
+	while (i < MaxBarWidth) {
+		if (i < BarLength) {
+			mvwprintw(win_cpu, 4, i, "%c", '|');
 		}
-		else
-		{
-			mvwprintw(win_cpu, 1, i, "%c", ' ');
-			wrefresh(win_cpu);
+		/*
+		else {
+			mvwprintw(win_cpu, x, i, "%c", ' ');
 		}
+		*/
+		wrefresh(win_cpu);
 		i++;
 	}
 	wrefresh(win_cpu);
 }
 
-void	print_frame(windows *frame, snapshot *file)
-{
+void	print_frame(windows *frame, snapshot *file, unsigned int usage) {
 	print_initial_frame(frame);
 	int			ch;
 	snapshot	*file_tmp;
@@ -121,6 +112,7 @@ void	print_frame(windows *frame, snapshot *file)
 	i = 0;
 	while (file_tmp->next) {
 		file_tmp = file_tmp->next;
+		cpu_usage_widget(usage, frame->win_cpu);
 		i++;
 	}
 	while (((ch = getch()) != KEY_F(1)) && ch != 'q') {
