@@ -8,7 +8,7 @@ debflags = -fsanitize=address -Wall -Wextra -Werror -g
 all: $(exec)
 
 $(exec): $(obj)
-	cc $(obj) $(ldflags)  -o $(exec)
+	cc $(obj) $(ldflags) -o $(exec)
 
 %.o: %.c $(header)
 	cc $(cflags) -c $< -o $@

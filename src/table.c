@@ -5,7 +5,8 @@
 #include <string.h>
 #include <unistd.h>
 
-void	print_initial_frame(windows *table) {
+void	print_initial_frame(windows *table)
+{
 	box(table->win_proc, 0, 0);
 	box(table->win_cpu, 0, 0);
 	box(table->win_mem, 0, 0);
@@ -18,23 +19,27 @@ void	print_initial_frame(windows *table) {
 	refresh();
 }
 
-void free_windows(windows *window) {
+void	free_windows(windows *window)
+{
 	free(window->win_cpu);
 	free(window->win_mem);
 	free(window->win_proc);
 	free(window);
 }
 
-int	win_orch(snapshot *file, windows *wind, int *cpu_usage) {
+int	win_orch(snapshot *file, windows *wind, int *cpu_usage)
+{
 	windows	*table;
 	int		*res;
+
 	initscr();
 	clear();
 	refresh();
 	noecho();
 	cbreak();
 	keypad(stdscr, TRUE);
-	if (!file || !wind) {
+	if (!file || !wind)
+	{
 		error_log("error with win_orch params\n");
 		return (1);
 	}
@@ -79,7 +84,8 @@ windows	*tables(windows *win_frame)
 	return (win_frame);
 }
 
-void	cpu_usage_widget(unsigned int usage, WINDOW *win_cpu) {
+void	cpu_usage_widget(unsigned int usage, WINDOW *win_cpu)
+{
 	int	i;
 	int	MaxBarWidth;
 	int	BarLength;
@@ -87,6 +93,7 @@ void	cpu_usage_widget(unsigned int usage, WINDOW *win_cpu) {
 	int	y;
 	int	width;
 	int	height;
+
 	i = 0;
 	getmaxyx(win_cpu, height, width);
 	MaxBarWidth = width - 20;
@@ -97,8 +104,9 @@ void	cpu_usage_widget(unsigned int usage, WINDOW *win_cpu) {
 	y += strlen("CPU") + 1;
 	mvwprintw(win_cpu, x, y, "%c", '[');
 	y++;
-	while (i <= MaxBarWidth - 1) {
-		if(i < BarLength)
+	while (i <= MaxBarWidth - 1)
+	{
+		if (i < BarLength)
 			mvwprintw(win_cpu, x, y, "%c", '*');
 		else if (i == MaxBarWidth - 1)
 			mvwprintw(win_cpu, x, y, "%c", ']');
@@ -116,6 +124,7 @@ void	print_frame(windows *frame, snapshot *file, unsigned int usage)
 	snapshot	*file_tmp;
 	pid_values	*process;
 	int			i;
+
 	print_initial_frame(frame);
 	if (!file || !frame) {
 		error_log("print_frame: linked list null");
@@ -127,9 +136,16 @@ void	print_frame(windows *frame, snapshot *file, unsigned int usage)
 	}
 	file_tmp = file;
 	i = 0;
-	cpu_usage_widget(usage, frame->win_cpu);
 	while (file_tmp->next) {
+		/*
+		mvwprintw(frame->win_proc, i + 1, 2, "%s %s %s", file_tmp->process->pid,
+			file_tmp->process->name, file_tmp->process->stat);
+		*/
+		mvwprintw(frame->win_proc, i + 1, 2, "%s %s", file_tmp->process->pid,
+			file_tmp->process->name);
+		cpu_usage_widget(usage, frame->win_cpu);
 		file_tmp = file_tmp->next;
+		wrefresh(frame->win_proc);
 		i++;
 	}
 	while (((ch = getch()) != KEY_F(1)) && ch != 'q') {

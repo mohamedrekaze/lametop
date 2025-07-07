@@ -77,6 +77,7 @@ void cpu_usage_widget(unsigned int usage, WINDOW *win_cpu);
 void error_log(char *error);
 void free_list_snapshot(snapshot *list);
 void free_windows(windows *window);
+void free_orch(DIR *dir, snapshot *tmp, snapshot *res);
 
 /* macros */
 #define fields_num 3

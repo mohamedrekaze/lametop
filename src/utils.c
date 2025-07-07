@@ -12,6 +12,11 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+/*
+ * new parsing method needed, values getting chopped and not copied
+ * */
+
+
 int is_num(char *file_name) {
 	int i = 0;
 	while(file_name[i]) {
@@ -37,26 +42,21 @@ char *read_stat(const char *path) {
 		error_log("read_stat: path passed is null\n");
 		return NULL;
 	}
-
 	size_t buf_size = 2048;
 	char *buffer = malloc(buf_size);
 	if (!buffer) {
 		error_log("read_stat: buffer allocation failed\n");
 		return NULL;
 	}
-
 	memset(buffer, 0, buf_size);
-
 	FILE *file = fopen(path, "r");
 	if (!file) {
 		error_log("read_stat: failed to open file\n");
 		free(buffer);
 		return NULL;
 	}
-
 	size_t byte_read = fread(buffer, 1, buf_size - 1, file);
 	buffer[byte_read] = '\0';  // safe null-termination
-
 	fclose(file);
 	return buffer;
 }
@@ -72,6 +72,7 @@ char *copy_pid_value(char *line, unsigned int numerical_flag) {
 		while(line[j] && !isdigit(line[j]))
 			j++;
 	}
+	j++;
 	while(line[j] && line[j] != '\n' && line[j] != '/' && i <= token_len - 1) {
 		if (i >= token_len - 1) {
 			token_len *= 2;
@@ -91,16 +92,19 @@ char *copy_pid_value(char *line, unsigned int numerical_flag) {
 char *clean_stat(char *token) {
 	int i = 0;
 	int j = 0;
-	int size = strlen(token) + 1;
+	int size = strlen(token);
+	char *n_token = malloc(size);
 	while(token[i] != '(')
 		i++;
 	i++;
 	while(token[i] != ')') {
+		n_token[j] = token[i];
 		i++;
+		j++;
 	}
-	i--;
-	token[i] = '\0';
-	return token;
+	n_token[j] = '\0';
+	free(token);
+	return n_token;
 }
 
 struct pid_values *get_field_value(const char *full_path) {
@@ -185,7 +189,7 @@ snapshot *ll_sort(snapshot *file, char *arg) {
 		prev->next = NULL;
 	left = file;
 	right = file_slow;
-	
+
 	left = ll_sort(left, arg);
 	right = ll_sort(right, arg);
 	return ll_merge(left, right, arg);
