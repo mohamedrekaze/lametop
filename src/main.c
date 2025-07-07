@@ -10,6 +10,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <term.h>
 #include <unistd.h>
 
 void	constuct_file(pid_values *process, snapshot *file)

@@ -14,6 +14,7 @@
 #include <unistd.h>
 #include <ncurses.h>
 #include <string.h>
+#include <term.h>
 
 /* structs */
 typedef struct cpu_stat {

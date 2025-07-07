@@ -2,7 +2,7 @@ header = src/lametop.h
 exec = lametop
 src = $(wildcard src/*.c)
 obj = $(src:.c=.o)
-ldflags = -lncurses
+ldflags = -lncurses --disable-leaks
 debflags = -fsanitize=address -Wall -Wextra -Werror -g
 
 all: $(exec)
