@@ -1,6 +1,7 @@
 #include "lametop.h"
 #include <dirent.h>
 #include <ncurses.h>
+#include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 
@@ -15,6 +16,13 @@ void	print_initial_frame(windows *table) {
 	wrefresh(table->win_cpu);
 	wrefresh(table->win_mem);
 	refresh();
+}
+
+void free_windows(windows *window) {
+	free(window->win_cpu);
+	free(window->win_mem);
+	free(window->win_proc);
+	free(window);
 }
 
 int	win_orch(snapshot *file, windows *wind, int *cpu_usage) {
@@ -33,16 +41,23 @@ int	win_orch(snapshot *file, windows *wind, int *cpu_usage) {
 	table = tables(wind);
 	print_frame(table, file, *cpu_usage);
 	clear();
+	refresh();
+	delwin(table->win_proc);
+	delwin(table->win_mem);
+	delwin(table->win_cpu);
+	free(table);
 	endwin();
 	return (0);
 }
 
-windows	*tables(windows *win_frame) {
+windows	*tables(windows *win_frame)
+{
 	int		cols_mid;
 	int		lins_mid;
 	WINDOW	*win_mem;
 	WINDOW	*win_cpu;
 	WINDOW	*win_proc;
+
 	if (LINES < 12 || COLS < 4)
 	{
 		error_log("tables: terminal size too small\n");
@@ -112,9 +127,9 @@ void	print_frame(windows *frame, snapshot *file, unsigned int usage)
 	}
 	file_tmp = file;
 	i = 0;
+	cpu_usage_widget(usage, frame->win_cpu);
 	while (file_tmp->next) {
 		file_tmp = file_tmp->next;
-		cpu_usage_widget(usage, frame->win_cpu);
 		i++;
 	}
 	while (((ch = getch()) != KEY_F(1)) && ch != 'q') {

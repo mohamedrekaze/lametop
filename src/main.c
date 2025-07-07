@@ -25,7 +25,6 @@ void	open_and_print_proc(const char *path)
 	struct dirent	*file;
 	struct dirent	*stat_file;
 	size_t			buff_size;
-	char			*buff;
 	int				i;
 	char			*full_path;
 	snapshot		*first;
@@ -36,9 +35,10 @@ void	open_and_print_proc(const char *path)
 
 	dir = opendir("/proc/");
 	buff_size = 1000;
-	buff = malloc(sizeof(char) * buff_size);
 	i = 0;
 	first = malloc(sizeof(snapshot));
+	first->next = NULL;
+	first->process = NULL;
 	while ((file = readdir(dir)) != NULL) {
 		if (strcmp(file->d_name, "stat") == 0) {
 			stat_file = file;
@@ -51,13 +51,22 @@ void	open_and_print_proc(const char *path)
 		full_path = construct_path(file);
 		if (full_path) {
 			process = get_field_value(full_path);
+			if(!process) {
+				error_log("open_and_read: null returned from get_field_value\n");
+				return;
+			}
 			constuct_file(process, first);
+			free(full_path);
 		}
 	}
+	snapshot *tmp = first;
 	first = first->next;
 	res = ll_sort(first, "name");
 	frame = malloc(sizeof(windows));
 	win_orch(res, frame, cp_usage);
+	free(tmp);
+	free(dir);
+	free_list_snapshot(res);
 }
 
 int	main(void)

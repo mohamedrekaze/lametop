@@ -4,9 +4,11 @@
 #include <fcntl.h>
 #include <linux/limits.h>
 #include <math.h>
+#include <ncurses.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <strings.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
@@ -31,76 +33,88 @@ char *construct_path(struct dirent *file) {
 }
 
 char *read_stat(const char *path) {
-	FILE *file= fopen(path, "r");
-	unsigned int buf_size = 1024;
-	char *buffer = malloc(sizeof(char) * buf_size);
-	unsigned int total_read = 0;
-	unsigned int byte_read = 0;
-	while((byte_read = fread(buffer+total_read, 1, 1, file)) > 0 && total_read < buf_size - 1) {
-		total_read += byte_read;
+	if (!path) {
+		error_log("read_stat: path passed is null\n");
+		return NULL;
 	}
+
+	size_t buf_size = 2048;
+	char *buffer = malloc(buf_size);
+	if (!buffer) {
+		error_log("read_stat: buffer allocation failed\n");
+		return NULL;
+	}
+
+	memset(buffer, 0, buf_size);
+
+	FILE *file = fopen(path, "r");
+	if (!file) {
+		error_log("read_stat: failed to open file\n");
+		free(buffer);
+		return NULL;
+	}
+
+	size_t byte_read = fread(buffer, 1, buf_size - 1, file);
+	buffer[byte_read] = '\0';  // safe null-termination
+
 	fclose(file);
-	buffer[total_read] = '\0';
 	return buffer;
 }
 
-	char *copy_pid_value(char *line, unsigned int numerical_flag) {
+char *copy_pid_value(char *line, unsigned int numerical_flag) {
 	int i = 0;
-	unsigned int token_len = 20;
-	char *token_tmp;
+	unsigned int token_len = 25;
 	char *token = malloc(sizeof(char) * token_len);
 	unsigned int j = 0;
-	while(line[j] != ':') {
-		j++;
-	}
-	while(!isalpha(line[j])) {
-		j++;
-	}
+	while(line[j] && line[j] != ':') j++;
+	while(line[j] && !isalpha(line[j])) j++;
 	if(numerical_flag) {
-		while(!isdigit(line[j])) {
+		while(line[j] && !isdigit(line[j]))
 			j++;
-		}
 	}
-	line += j;
-	while(*line && *line != '\n' && *line != '/') {
-		if(i + 1 == token_len) {
-			token_tmp = token;
+	while(line[j] && line[j] != '\n' && line[j] != '/' && i <= token_len - 1) {
+		if (i >= token_len - 1) {
 			token_len *= 2;
-			token = realloc(token, token_len);
-			if(!token) {
-				printf("realloc error!\n");
-				return token = token_tmp;
+			char *token_tmp = realloc(token, token_len);
+			if (!token_tmp) {
+				free(token);
+				return NULL;
 			}
+			token = token_tmp;
 		}
-		token[i] = *line;
-		line++;
-		i++;
+		token[i++] = line[j++];
 	}
+	token[i] = '\0';
 	return token;
 }
 
 char *clean_stat(char *token) {
 	int i = 0;
 	int j = 0;
-	char new_token[strlen(token) + 10];
+	int size = strlen(token) + 1;
 	while(token[i] != '(')
 		i++;
 	i++;
 	while(token[i] != ')') {
-		new_token[j] = token[i];
-		j++;
 		i++;
 	}
-	new_token[j] = '\0';
-	return strdup(new_token);
+	i--;
+	token[i] = '\0';
+	return token;
 }
 
 struct pid_values *get_field_value(const char *full_path) {
 	struct pid_values *pid =  malloc(sizeof(struct pid_values));
+	if(!pid) return NULL;
 	const char *fields[fields_num] = {"Name", "Pid", "State"};
 	int i = 0;
 	char *line = read_stat(full_path);
 	char *token;
+	if (!line) {
+		error_log("get_field_value: read_stat returned NULL for %s\n");
+		free(pid);
+		return NULL;
+	}
 	while(i < fields_num) {
 		if(strcmp("Name", fields[i]) == 0) {
 			pid->name = copy_pid_value(strstr(line, fields[i]), 0);
@@ -111,7 +125,6 @@ struct pid_values *get_field_value(const char *full_path) {
 		if(strcmp("State", fields[i]) == 0) {
 			token = copy_pid_value(strstr(line, fields[i]), 0);
 			pid->stat = clean_stat(token);
-			free(token);
 		}
 		i++;
 	}
@@ -120,14 +133,16 @@ struct pid_values *get_field_value(const char *full_path) {
 }
 
 void add_tail(pid_values *process, snapshot *file) {
-	snapshot *new_proc = malloc(sizeof(snapshot));
+	if(!process || !file)
+		return;
 	while(file->next) {
 		file = file->next;
 	}
-	if(!file->next) {
-		new_proc->process = process;
-		new_proc->next = NULL;
-		file->next = new_proc;
+	snapshot *new_proc;
+	if(file && !file->next) {
+		file->next = malloc(sizeof(snapshot));
+		file->next->process = process;
+		file->next->next = NULL;
 	}
 }
 
@@ -228,5 +243,20 @@ void error_log(char *error) {
 	if (log) {
 		fprintf(log, "%s\n", error);
 		fclose(log);
+	}
+}
+
+void free_list_snapshot(snapshot *list) {
+	snapshot *tmp;
+	while (list) {
+		tmp = list;
+		if (tmp->process) {
+			free(tmp->process->stat);
+			free(tmp->process->name);
+			free(tmp->process->pid);
+			free(tmp->process);
+		}
+		list = list->next;
+		free(tmp);
 	}
 }
