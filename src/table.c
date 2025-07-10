@@ -126,17 +126,20 @@ void	print_frame(windows *frame, snapshot *file, unsigned int usage)
 	int			i;
 
 	print_initial_frame(frame);
-	if (!file || !frame) {
+	if (!file || !frame)
+	{
 		error_log("print_frame: linked list null");
 		return ;
 	}
-	if (!frame->win_proc || !frame->win_cpu || !frame->win_mem) {
+	if (!frame->win_proc || !frame->win_cpu || !frame->win_mem)
+	{
 		error_log("print_frame: frame elements null");
 		return ;
 	}
 	file_tmp = file;
 	i = 0;
-	while (file_tmp->next) {
+	while (file_tmp->next)
+	{
 		/*
 		mvwprintw(frame->win_proc, i + 1, 2, "%s %s %s", file_tmp->process->pid,
 			file_tmp->process->name, file_tmp->process->stat);
@@ -148,7 +151,8 @@ void	print_frame(windows *frame, snapshot *file, unsigned int usage)
 		wrefresh(frame->win_proc);
 		i++;
 	}
-	while (((ch = getch()) != KEY_F(1)) && ch != 'q') {
+	while (((ch = getch()) != KEY_F(1)) && ch != 'q')
+	{
 		refresh();
 	}
 }

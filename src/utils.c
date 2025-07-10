@@ -13,9 +13,8 @@
 #include <unistd.h>
 
 /*
- * new parsing method needed, values getting chopped and not copied
- * */
-
+	new parsing method needed, values getting chopped and not copied
+*/
 
 int is_num(char *file_name) {
 	int i = 0;
