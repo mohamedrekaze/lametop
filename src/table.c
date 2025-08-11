@@ -73,7 +73,8 @@ windows	*tables(windows *win_frame)
 	lins_mid = (LINES / 2);
 	win_mem = newwin(10, cols_mid, 0, 0);
 	win_cpu = newwin(10, cols_mid, 0, cols_mid);
-	win_proc = newwin(LINES - 11, COLS, 10, 0);
+	//win_proc = newwin(LINES - 11, COLS, 10, 0);
+	win_proc = newpad(500, COLS);
 
 	win_frame->win_proc_x = LINES - 11;
 	win_frame->win_proc_y = COLS;
@@ -133,31 +134,42 @@ void	print_frame(windows *frame, snapshot *file, unsigned int usage)
 	snapshot	*file_tmp;
 	pid_values	*process;
 	int			i;
-
+	int			scroll_off = 0;
 	print_initial_frame(frame);
-	if (!file || !frame)
-	{
+	if (!file || !frame) {
 		error_log("print_frame: linked list null");
 		return ;
 	}
-	if (!frame->win_proc || !frame->win_cpu || !frame->win_mem)
-	{
+	if (!frame->win_proc || !frame->win_cpu || !frame->win_mem) {
 		error_log("print_frame: frame elements null");
 		return ;
 	}
 	file_tmp = file;
 	i = 1;
-	while (file_tmp->next && i < frame->win_proc_x - 1)
-	{
-		mvwprintw(frame->win_proc, i, 2, "[%s]  [%s]  [%s]", 
-			file_tmp->process->pid, file_tmp->process->name, file_tmp->process->stat);
+	wattron(frame->win_proc, A_BOLD | COLOR_PAIR(1));
+	mvwprintw(frame->win_proc, i++, 2, "%-6s %-30s %s", "Pid", "Name", "State");
+	wattroff(frame->win_proc, A_BOLD | COLOR_PAIR(1));
+	while (file_tmp->next) {
+		mvwprintw(frame->win_proc, i, 2, "%-6s %-30s %s", file_tmp->process->pid,
+			file_tmp->process->name, file_tmp->process->stat);
 		cpu_usage_widget(usage, frame->win_cpu);
 		file_tmp = file_tmp->next;
-		wrefresh(frame->win_proc);
+		//wrefresh(frame->win_proc);
+		prefresh(frame->win_proc, scroll_off, 0, 10, 0, 
+		   10 + frame->win_proc_x - 1, frame->win_proc_y - 1);
 		i++;
 	}
-	while (((ch = getch()) != KEY_F(1)) && ch != 'q')
-	{
+	while (((ch = getch()) != KEY_F(1)) && ch != 'q' && scroll_off < 500) {
+		if(ch == KEY_UP || ch == 'k')
+			scroll_off--;
+		else if(ch == 'K')
+			scroll_off -= 5;
+		else if(ch == 'J')
+			scroll_off += 5;
+		else if(ch == KEY_DOWN || ch == 'j')
+			scroll_off++;
 		refresh();
+		prefresh(frame->win_proc, scroll_off, 0, 10, 0, 
+		   10 + frame->win_proc_x - 1, frame->win_proc_y - 1);
 	}
 }
