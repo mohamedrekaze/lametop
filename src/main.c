@@ -64,6 +64,7 @@ void	open_and_print_proc(const char *path)
 	first = first->next;
 	res = ll_sort(first, "name");
 	frame = malloc(sizeof(windows));
+	//print_ll(res);
 	win_orch(res, frame, cp_usage);
 	free_orch(dir, tmp, res);
 }

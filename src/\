@@ -12,6 +12,10 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+/*
+	new parsing method needed, values getting chopped and not copied
+*/
+
 int is_num(char *file_name) {
 	int i = 0;
 	while(file_name[i]) {
@@ -61,36 +65,26 @@ char *copy_pid_value(char *line, unsigned int numerical_flag) {
 	unsigned int token_len = 25;
 	char *token = malloc(sizeof(char) * token_len);
 	unsigned int j = 0;
-	while(line[j] && line[j] != ':')
-		j++;
-	if (numerical_flag) {
-		while(!isdigit(line[j])) 
+	while(line[j] && line[j] != ':') j++;
+	while(line[j] && !isalpha(line[j])) j++;
+	if(numerical_flag) {
+		while(line[j] && !isdigit(line[j]))
 			j++;
-		while(line[j] && isdigit(line[j]))
-		{
-			token[i++] = line[j++];
-		}
-		token[i] = '\0';
-		return token;
 	}
-	else {
-		if (line[j] == ':') j++;
-		while(isspace(line[j])) j++;
-		while(line[j] && line[j] != '\n' && line[j] != '/' && i <= token_len - 1) {
-			if (i >= token_len - 1) {
-				token_len *= 2;
-				char *token_tmp = realloc(token, token_len);
-				if (!token_tmp) {
-					free(token);
-					return NULL;
-				}
-				token = token_tmp;
+	while(line[j] && line[j] != '\n' && line[j] != '/' && i <= token_len - 1) {
+		if (i >= token_len - 1) {
+			token_len *= 2;
+			char *token_tmp = realloc(token, token_len);
+			if (!token_tmp) {
+				free(token);
+				return NULL;
 			}
-			token[i++] = line[j++];
+			token = token_tmp;
 		}
-		token[i] = '\0';
-		return token;
+		token[i++] = line[j++];
 	}
+	token[i] = '\0';
+	return token;
 }
 
 char *clean_stat(char *token) {
@@ -123,15 +117,14 @@ struct pid_values *get_field_value(const char *full_path) {
 		free(pid);
 		return NULL;
 	}
-
 	while(i < fields_num) {
-		if(strncmp("Name:", fields[i], 5) == 0) {
+		if(strncmp(line, fields[i], 5) == 0) {
 			pid->name = copy_pid_value(strstr(line, fields[i]), 0);
 		}
-		if(strncmp("Pid:", fields[i], 4) == 0) {
+		if(strncmp(line, fields[i], 4) == 0) {
 			pid->pid = copy_pid_value(strstr(line, fields[i]), 1);
 		}
-		if(strncmp("State:", fields[i], 6) == 0) {
+		if(strncmp(line, fields[i], 6) == 0) {
 			token = copy_pid_value(strstr(line, fields[i]), 0);
 			pid->stat = clean_stat(token);
 		}

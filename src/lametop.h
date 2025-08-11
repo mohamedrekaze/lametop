@@ -40,6 +40,12 @@ typedef struct windows {
 	WINDOW *win_proc;
 	WINDOW *win_mem;
 	WINDOW *win_cpu;
+	int win_proc_x;
+	int win_proc_y;
+	int win_mem_x;
+	int win_mem_y;
+	int win_cpu_x;
+	int win_cpu_y;
 } windows;
 
 typedef struct snapshot snapshot;
@@ -81,7 +87,5 @@ void free_orch(DIR *dir, snapshot *tmp, snapshot *res);
 
 /* macros */
 #define fields_num 3
-
-
 
 #endif

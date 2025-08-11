@@ -68,11 +68,20 @@ windows	*tables(windows *win_frame)
 		error_log("tables: terminal size too small\n");
 		return (0);
 	}
+
 	cols_mid = (COLS / 2);
 	lins_mid = (LINES / 2);
 	win_mem = newwin(10, cols_mid, 0, 0);
 	win_cpu = newwin(10, cols_mid, 0, cols_mid);
 	win_proc = newwin(LINES - 11, COLS, 10, 0);
+
+	win_frame->win_proc_x = LINES - 11;
+	win_frame->win_proc_y = COLS;
+	win_frame->win_mem_x = 10;
+	win_frame->win_mem_y = cols_mid;
+	win_frame->win_cpu_x = 10;
+	win_frame->win_cpu_y = cols_mid;
+
 	if (!win_mem || !win_cpu || !win_proc)
 	{
 		error_log("tables: window creation failed\n");
@@ -137,15 +146,11 @@ void	print_frame(windows *frame, snapshot *file, unsigned int usage)
 		return ;
 	}
 	file_tmp = file;
-	i = 0;
-	while (file_tmp->next)
+	i = 1;
+	while (file_tmp->next && i < frame->win_proc_x - 1)
 	{
-		/*
-		mvwprintw(frame->win_proc, i + 1, 2, "%s %s %s", file_tmp->process->pid,
-			file_tmp->process->name, file_tmp->process->stat);
-		*/
-		mvwprintw(frame->win_proc, i + 1, 2, "%s %s", file_tmp->process->pid,
-			file_tmp->process->name);
+		mvwprintw(frame->win_proc, i, 2, "[%s]  [%s]  [%s]", 
+			file_tmp->process->pid, file_tmp->process->name, file_tmp->process->stat);
 		cpu_usage_widget(usage, frame->win_cpu);
 		file_tmp = file_tmp->next;
 		wrefresh(frame->win_proc);
