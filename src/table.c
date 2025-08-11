@@ -164,10 +164,10 @@ void	print_frame(windows *frame, snapshot *file, unsigned int usage)
 		i++;
 	}
 	while (((ch = getch()) != KEY_F(1)) && ch != 'q') {
-		if(ch == 'K' && scroll_off > 1)
-			scroll_off -= 2;
+		if(ch == 'K' && scroll_off >= 2)
+			scroll_off -= 3;
 		else if(ch == 'J' && scroll_off < 450)
-			scroll_off += 2;
+			scroll_off += 3;
 		else if((ch == KEY_DOWN || ch == 'j') && scroll_off < 450)
 			scroll_off++;
 		else if((ch == KEY_UP || ch == 'k') && scroll_off > 1)

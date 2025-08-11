@@ -52,10 +52,13 @@ void	open_and_print_proc(const char *path)
 		full_path = construct_path(file);
 		if (full_path) {
 			process = get_field_value(full_path);
+			/*
 			if(!process) {
 				error_log("open_and_read: null returned from get_field_value\n");
+				fprintf(stderr, "process null\n");
 				return;
 			}
+			*/
 			constuct_file(process, first);
 			free(full_path);
 		}
