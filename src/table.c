@@ -7,12 +7,14 @@
 
 void	print_initial_frame(windows *table)
 {
-	box(table->win_proc, 0, 0);
+	box(table->win_proc_frame, 0, 0);
+	//box(table->win_proc, 0, 0);
 	box(table->win_cpu, 0, 0);
 	box(table->win_mem, 0, 0);
 	wprintw(table->win_cpu, "win_cpu");
-	wprintw(table->win_proc, "win_proc");
+	wprintw(table->win_proc_frame, "win_proc");
 	wprintw(table->win_mem, "win_mem");
+	wrefresh(table->win_proc_frame);
 	wrefresh(table->win_proc);
 	wrefresh(table->win_cpu);
 	wrefresh(table->win_mem);
@@ -62,6 +64,7 @@ windows	*tables(windows *win_frame)
 	WINDOW	*win_mem;
 	WINDOW	*win_cpu;
 	WINDOW	*win_proc;
+	WINDOW	*win_p_frame;
 
 	if (LINES < 12 || COLS < 4)
 	{
@@ -73,8 +76,8 @@ windows	*tables(windows *win_frame)
 	lins_mid = (LINES / 2);
 	win_mem = newwin(10, cols_mid, 0, 0);
 	win_cpu = newwin(10, cols_mid, 0, cols_mid);
-	//win_proc = newwin(LINES - 11, COLS, 10, 0);
-	win_proc = newpad(500, COLS);
+	win_p_frame = newwin(LINES - 11, COLS, 10, 0);
+	win_proc = newpad(500, COLS - 2);
 
 	win_frame->win_proc_x = LINES - 11;
 	win_frame->win_proc_y = COLS;
@@ -82,6 +85,7 @@ windows	*tables(windows *win_frame)
 	win_frame->win_mem_y = cols_mid;
 	win_frame->win_cpu_x = 10;
 	win_frame->win_cpu_y = cols_mid;
+	win_frame->win_proc_frame = win_p_frame;
 
 	if (!win_mem || !win_cpu || !win_proc)
 	{
@@ -155,21 +159,21 @@ void	print_frame(windows *frame, snapshot *file, unsigned int usage)
 		cpu_usage_widget(usage, frame->win_cpu);
 		file_tmp = file_tmp->next;
 		//wrefresh(frame->win_proc);
-		prefresh(frame->win_proc, scroll_off, 0, 10, 0, 
-		   10 + frame->win_proc_x - 1, frame->win_proc_y - 1);
+		prefresh(frame->win_proc, scroll_off, 0, 11, 1, 
+		   10 + frame->win_proc_x - 2, frame->win_proc_y - 2);
 		i++;
 	}
-	while (((ch = getch()) != KEY_F(1)) && ch != 'q' && scroll_off < 500) {
-		if(ch == KEY_UP || ch == 'k')
-			scroll_off--;
-		else if(ch == 'K')
-			scroll_off -= 5;
-		else if(ch == 'J')
-			scroll_off += 5;
-		else if(ch == KEY_DOWN || ch == 'j')
+	while (((ch = getch()) != KEY_F(1)) && ch != 'q') {
+		if(ch == 'K' && scroll_off > 1)
+			scroll_off -= 2;
+		else if(ch == 'J' && scroll_off < 450)
+			scroll_off += 2;
+		else if((ch == KEY_DOWN || ch == 'j') && scroll_off < 450)
 			scroll_off++;
+		else if((ch == KEY_UP || ch == 'k') && scroll_off > 1)
+			scroll_off--;
 		refresh();
-		prefresh(frame->win_proc, scroll_off, 0, 10, 0, 
-		   10 + frame->win_proc_x - 1, frame->win_proc_y - 1);
+		prefresh(frame->win_proc, scroll_off, 0, 11, 1, 
+		   10 + frame->win_proc_x - 2, frame->win_proc_y - 2);
 	}
 }

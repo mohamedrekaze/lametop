@@ -40,6 +40,7 @@ typedef struct windows {
 	WINDOW *win_proc;
 	WINDOW *win_mem;
 	WINDOW *win_cpu;
+	WINDOW *win_proc_frame;
 	int win_proc_x;
 	int win_proc_y;
 	int win_mem_x;
