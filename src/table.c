@@ -132,6 +132,13 @@ void	cpu_usage_widget(unsigned int usage, WINDOW *win_cpu)
 	wrefresh(win_cpu);
 }
 
+void	print_proc_header(windows *frame)
+{
+	wattron(frame->win_proc, A_BOLD | COLOR_PAIR(1));
+	mvwprintw(frame->win_proc, 1, 2, "%-6s %-30s %s", "Pid", "Name", "State");
+	wattroff(frame->win_proc, A_BOLD | COLOR_PAIR(1));
+}
+
 void	print_frame(windows *frame, snapshot *file, unsigned int usage)
 {
 	int			ch;
@@ -149,20 +156,20 @@ void	print_frame(windows *frame, snapshot *file, unsigned int usage)
 		return ;
 	}
 	file_tmp = file;
-	i = 1;
-	wattron(frame->win_proc, A_BOLD | COLOR_PAIR(1));
-	mvwprintw(frame->win_proc, i++, 2, "%-6s %-30s %s", "Pid", "Name", "State");
-	wattroff(frame->win_proc, A_BOLD | COLOR_PAIR(1));
+	i = 2;
+	print_proc_header(frame);
+	wrefresh(frame->win_proc);
+
 	while (file_tmp->next) {
+		cpu_usage_widget(usage, frame->win_cpu);
 		mvwprintw(frame->win_proc, i, 2, "%-6s %-30s %s", file_tmp->process->pid,
 			file_tmp->process->name, file_tmp->process->stat);
-		cpu_usage_widget(usage, frame->win_cpu);
+		prefresh(frame->win_proc, scroll_off, 0, 11, 1, 10 + frame->win_proc_x - 2,
+		   frame->win_proc_y - 2);
 		file_tmp = file_tmp->next;
-		//wrefresh(frame->win_proc);
-		prefresh(frame->win_proc, scroll_off, 0, 11, 1, 
-		   10 + frame->win_proc_x - 2, frame->win_proc_y - 2);
 		i++;
 	}
+
 	while (((ch = getch()) != KEY_F(1)) && ch != 'q') {
 		if(ch == 'K' && scroll_off >= 2)
 			scroll_off -= 3;

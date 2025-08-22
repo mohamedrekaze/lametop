@@ -85,6 +85,7 @@ void error_log(char *error);
 void free_list_snapshot(snapshot *list);
 void free_windows(windows *window);
 void free_orch(DIR *dir, snapshot *tmp, snapshot *res);
+void	print_proc_header(windows *frame);
 
 /* macros */
 #define fields_num 3
