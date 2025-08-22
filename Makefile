@@ -6,6 +6,7 @@ ldflags = -lncurses --disable-leaks
 debflags = -fsanitize=address -Wall -Wextra -Werror -g
 
 all: $(exec)
+	./lametop
 
 $(exec): $(obj)
 	cc $(obj) $(ldflags) -o $(exec)

@@ -5,4 +5,3 @@ void free_orch(DIR *dir, snapshot *tmp, snapshot *res) {
 	free(dir);
 	free_list_snapshot(res);
 }
-
