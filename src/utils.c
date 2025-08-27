@@ -10,6 +10,7 @@
 #include <string.h>
 #include <strings.h>
 #include <sys/stat.h>
+#include <time.h>
 #include <unistd.h>
 
 int is_num(char *file_name) {
@@ -248,8 +249,13 @@ snapshot *ll_merge(snapshot *left, snapshot *right, char *arg) {
 }
 
 void error_log(char *error) {
+    char buff[100];
 	FILE *log = fopen("error.log", "a");
+    time_t now  = time(NULL);
+    struct tm *local = localtime(&now);
+    strftime(buff, sizeof(buff), "%Y-%m-%d %H:%M", local);
 	if (log) {
+		fprintf(log, "%s\t", buff);
 		fprintf(log, "%s\n", error);
 		fclose(log);
 	}

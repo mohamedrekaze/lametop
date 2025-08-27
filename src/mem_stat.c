@@ -24,9 +24,10 @@ char	*read_mem_file()
     return buff;
 }
 
-mem_stat *parse_mem_info(char *buff)
+mem_stat *parse_mem_info()
 {
     char *delim = ": \n";
+    char *buff = read_mem_file();
     char *line = strtok(buff, delim);
     mem_stat *mem = malloc(sizeof(mem_stat));
     if (!mem) {

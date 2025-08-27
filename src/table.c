@@ -1,8 +1,10 @@
 #include "lametop.h"
 #include <dirent.h>
 #include <ncurses.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <term.h>
 #include <unistd.h>
 
 void	print_initial_frame(windows *table)
@@ -146,6 +148,7 @@ void	print_frame(windows *frame, snapshot *file, unsigned int usage)
 	pid_values	*process;
 	int			i;
 	int			scroll_off = 0;
+    mem_stat *mem = parse_mem_info();
 	print_initial_frame(frame);
 	if (!file || !frame) {
 		error_log("print_frame: linked list null");
@@ -158,8 +161,9 @@ void	print_frame(windows *frame, snapshot *file, unsigned int usage)
 	file_tmp = file;
 	i = 1;
 	print_proc_header(frame);
+    print_mem_frame(mem, frame);
+    wrefresh(frame->win_mem);
 	wrefresh(frame->win_proc);
-
 	while (file_tmp->next) {
 		cpu_usage_widget(usage, frame->win_cpu);
 		mvwprintw(frame->win_proc, i, 2, "%-6s %-30s %s", file_tmp->process->pid,
@@ -183,4 +187,17 @@ void	print_frame(windows *frame, snapshot *file, unsigned int usage)
 		prefresh(frame->win_proc, scroll_off, 0, 11, 1, 
 		   10 + frame->win_proc_x - 2, frame->win_proc_y - 2);
 	}
+}
+
+void print_mem_frame(mem_stat *mem, windows *frame)
+{
+    int row, col;
+    char buff[1000];
+    getmaxyx(frame->win_mem, row, col);
+
+    int ret = mvwprintw(frame->win_mem, row - (row - 1), col - (col - 1), "%s", "hello world");
+
+    error_log("return val of mvwprintw");
+    sprintf(buff, "%d", ret);
+    error_log(buff);
 }

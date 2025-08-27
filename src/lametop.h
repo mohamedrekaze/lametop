@@ -96,7 +96,8 @@ void free_windows(windows *window);
 void free_orch(DIR *dir, snapshot *tmp, snapshot *res);
 void	print_proc_header(windows *frame);
 char	*read_mem_file();
-mem_stat *parse_mem_info(char *buff);
+mem_stat *parse_mem_info();
+void print_mem_frame(mem_stat *mem, windows *frame);
 
 /* macros */
 #define fields_num 3
