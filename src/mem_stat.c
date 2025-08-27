@@ -24,7 +24,8 @@ char	*read_mem_file()
     return buff;
 }
 
-mem_stat *parse_mem_info(char *buff) {
+mem_stat *parse_mem_info(char *buff)
+{
     char *delim = ": \n";
     char *line = strtok(buff, delim);
     mem_stat *mem = malloc(sizeof(mem_stat));
@@ -62,14 +63,15 @@ mem_stat *parse_mem_info(char *buff) {
         else 
             line = strtok(NULL, delim);
     }
+    mem->used_memory = mem->total_memory - mem->free_memory;
     return mem;
 }
 
-int main()
-{
-    char *buff = read_mem_file();
-    mem_stat *mem = parse_mem_info(buff);
-    printf("%ld\n", mem->total_memory);
-    printf("%ld\n", mem->swap_total);
-    printf("%ld\n", mem->swap_free);
-}
+// int main()
+// {
+//     char *buff = read_mem_file();
+//     mem_stat *mem = parse_mem_info(buff);
+//     printf("%ld\n", mem->total_memory);
+//     printf("%ld\n", mem->free_memory);
+//     printf("%ld\n", mem->used_memory);
+// }
