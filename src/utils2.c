@@ -1,4 +1,5 @@
 #include "lametop.h"
+#include <stdio.h>
 
 void free_orch(DIR *dir, snapshot *tmp, snapshot *res) {
 	free(tmp);

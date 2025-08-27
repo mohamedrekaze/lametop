@@ -135,7 +135,7 @@ void	cpu_usage_widget(unsigned int usage, WINDOW *win_cpu)
 void	print_proc_header(windows *frame)
 {
 	wattron(frame->win_proc, A_BOLD | COLOR_PAIR(1));
-	mvwprintw(frame->win_proc, 1, 2, "%-6s %-30s %s", "Pid", "Name", "State");
+	mvwprintw(frame->win_proc, 0, 2, "%-6s %-30s %s", "Pid", "Name", "State");
 	wattroff(frame->win_proc, A_BOLD | COLOR_PAIR(1));
 }
 
@@ -156,7 +156,7 @@ void	print_frame(windows *frame, snapshot *file, unsigned int usage)
 		return ;
 	}
 	file_tmp = file;
-	i = 2;
+	i = 1;
 	print_proc_header(frame);
 	wrefresh(frame->win_proc);
 

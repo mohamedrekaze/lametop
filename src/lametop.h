@@ -30,6 +30,16 @@ typedef struct cpu_stat {
 	long guest_nice;
 } cpu_stat;
 
+typedef struct mem_stat {
+	size_t total_memory;
+	size_t free_memory;
+	size_t used_memory;
+	size_t mem_avaible;
+	size_t mem_cached;
+	size_t swap_total;
+	size_t swap_free;
+} mem_stat;
+
 typedef struct pid_values {
 	char *name;
 	char *stat;
@@ -86,6 +96,7 @@ void free_list_snapshot(snapshot *list);
 void free_windows(windows *window);
 void free_orch(DIR *dir, snapshot *tmp, snapshot *res);
 void	print_proc_header(windows *frame);
+char	*read_mem_file();
 
 /* macros */
 #define fields_num 3
