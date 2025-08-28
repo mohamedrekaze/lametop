@@ -137,7 +137,7 @@ void	cpu_usage_widget(unsigned int usage, WINDOW *win_cpu)
 void	print_proc_header(windows *frame)
 {
 	wattron(frame->win_proc, A_BOLD | COLOR_PAIR(1));
-	mvwprintw(frame->win_proc, 0, 2, "%-6s %-30s %s", "Pid", "Name", "State");
+	mvwprintw(frame->win_proc, 0, 2, "%-12s %-30s %s", "Pid", "Name", "State");
 	wattroff(frame->win_proc, A_BOLD | COLOR_PAIR(1));
 }
 
@@ -166,7 +166,7 @@ void	print_frame(windows *frame, snapshot *file, unsigned int usage)
 	wrefresh(frame->win_proc);
 	while (file_tmp->next) {
 		cpu_usage_widget(usage, frame->win_cpu);
-		mvwprintw(frame->win_proc, i, 2, "%-6s %-30s %s", file_tmp->process->pid,
+		mvwprintw(frame->win_proc, i, 2, "%-12s %-30s %s", file_tmp->process->pid,
 			file_tmp->process->name, file_tmp->process->stat);
 		prefresh(frame->win_proc, scroll_off, 0, 11, 1, 10 + frame->win_proc_x - 2,
 		   frame->win_proc_y - 2);
@@ -191,13 +191,29 @@ void	print_frame(windows *frame, snapshot *file, unsigned int usage)
 
 void print_mem_frame(mem_stat *mem, windows *frame)
 {
-    int row, col;
+    int row, col, i;
     char buff[1000];
     getmaxyx(frame->win_mem, row, col);
-
-    int ret = mvwprintw(frame->win_mem, row - (row - 1), col - (col - 1), "%s", "hello world");
-
-    error_log("return val of mvwprintw");
-    sprintf(buff, "%d", ret);
-    error_log(buff);
+    
+    i = 1;
+    int ret = mvwprintw(frame->win_mem, row - (row - i++), col - (col - 2)
+            , "%s\t%ld%s", "Total mem:", mem->total_memory, " KB");
+    ret = mvwprintw(frame->win_mem, row - (row - i++), col - (col - 2)
+            , "%s\t%ld%s", "Used mem:", mem->used_memory, " KB");
+    ret = mvwprintw(frame->win_mem, row - (row - i++), col - (col - 2)
+            , "%s\t%ld%s", "Cached mem:", mem->mem_cached, " KB");
+    ret = mvwprintw(frame->win_mem, row - (row - i++), col - (col - 2)
+            , "%s\t%ld%s", "Free mem:", mem->free_memory, " KB");
+    ret = mvwprintw(frame->win_mem, row - (row - i++), col - (col - 2)
+            , "%s\t%ld%s", "Avaible mem:", mem->mem_avaible, " KB");
+    ret = mvwprintw(frame->win_mem, row - (row - i++), col - (col - 2)
+            , "%s\t%ld%s", "Swap mem:", mem->swap_total, " KB");
+    ret = mvwprintw(frame->win_mem, row - (row - i++), col - (col - 2)
+            , "%s\t%ld%s", "Swap Free:", mem->swap_free, " KB");
+    
+    if (ret < 0) {
+        error_log("return val of mvwprintw");
+        sprintf(buff, "%d", ret);
+        error_log(buff);
+    }
 }

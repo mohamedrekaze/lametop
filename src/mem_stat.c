@@ -1,7 +1,7 @@
 #include "lametop.h"
-#include <ctype.h>
 #include <dirent.h>
 #include <linux/limits.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -67,12 +67,3 @@ mem_stat *parse_mem_info()
     mem->used_memory = mem->total_memory - mem->free_memory;
     return mem;
 }
-
-// int main()
-// {
-//     char *buff = read_mem_file();
-//     mem_stat *mem = parse_mem_info(buff);
-//     printf("%ld\n", mem->total_memory);
-//     printf("%ld\n", mem->free_memory);
-//     printf("%ld\n", mem->used_memory);
-// }
