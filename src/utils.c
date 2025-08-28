@@ -253,7 +253,7 @@ void error_log(char *error) {
 	FILE *log = fopen("error.log", "a");
     time_t now  = time(NULL);
     struct tm *local = localtime(&now);
-    strftime(buff, sizeof(buff), "%Y-%m-%d %H:%M", local);
+    strftime(buff, sizeof(buff), "%Y-%m-%d %H:%M:%-2S", local);
 	if (log) {
 		fprintf(log, "%s\t", buff);
 		fprintf(log, "%s\n", error);

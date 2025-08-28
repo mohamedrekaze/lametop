@@ -1,5 +1,6 @@
 #include "lametop.h"
 #include <dirent.h>
+#include <math.h>
 #include <ncurses.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,6 +38,7 @@ int	win_orch(snapshot *file, windows *wind, int *cpu_usage)
 	int		*res;
 
 	initscr();
+    start_color();
 	clear();
 	refresh();
 	noecho();
@@ -136,9 +138,12 @@ void	cpu_usage_widget(unsigned int usage, WINDOW *win_cpu)
 
 void	print_proc_header(windows *frame)
 {
-	wattron(frame->win_proc, A_BOLD | COLOR_PAIR(1));
-	mvwprintw(frame->win_proc, 0, 2, "%-12s %-30s %s", "Pid", "Name", "State");
-	wattroff(frame->win_proc, A_BOLD | COLOR_PAIR(1));
+    init_pair(10, COLOR_YELLOW, COLOR_BLACK);
+	wattron(frame->win_proc, A_BOLD | COLOR_PAIR(10));
+	mvwprintw(frame->win_proc, 0, 2, "%-12s", "Pid");
+	mvwprintw(frame->win_proc, 0, strlen("Pid ") + 11, "%-30s", "Name");
+	mvwprintw(frame->win_proc, 0, strlen("PidName") + 39, "%-8s", "State");
+	wattroff(frame->win_proc, A_BOLD | COLOR_PAIR(10));
 }
 
 void	print_frame(windows *frame, snapshot *file, unsigned int usage)
@@ -149,6 +154,7 @@ void	print_frame(windows *frame, snapshot *file, unsigned int usage)
 	int			i;
 	int			scroll_off = 0;
     mem_stat *mem = parse_mem_info();
+
 	print_initial_frame(frame);
 	if (!file || !frame) {
 		error_log("print_frame: linked list null");
@@ -160,10 +166,12 @@ void	print_frame(windows *frame, snapshot *file, unsigned int usage)
 	}
 	file_tmp = file;
 	i = 1;
+
 	print_proc_header(frame);
     print_mem_frame(mem, frame);
     wrefresh(frame->win_mem);
 	wrefresh(frame->win_proc);
+
 	while (file_tmp->next) {
 		cpu_usage_widget(usage, frame->win_cpu);
 		mvwprintw(frame->win_proc, i, 2, "%-12s %-30s %s", file_tmp->process->pid,
@@ -175,7 +183,7 @@ void	print_frame(windows *frame, snapshot *file, unsigned int usage)
 	}
 
 	while (((ch = getch()) != KEY_F(1)) && ch != 'q') {
-		if(ch == 'K' && scroll_off >= 2)
+		if(ch == 'K' && scroll_off >= 1)
 			scroll_off -= 3;
 		else if(ch == 'J' && scroll_off < 450)
 			scroll_off += 3;
@@ -187,33 +195,4 @@ void	print_frame(windows *frame, snapshot *file, unsigned int usage)
 		prefresh(frame->win_proc, scroll_off, 0, 11, 1, 
 		   10 + frame->win_proc_x - 2, frame->win_proc_y - 2);
 	}
-}
-
-void print_mem_frame(mem_stat *mem, windows *frame)
-{
-    int row, col, i;
-    char buff[1000];
-    getmaxyx(frame->win_mem, row, col);
-    
-    i = 1;
-    int ret = mvwprintw(frame->win_mem, row - (row - i++), col - (col - 2)
-            , "%s\t%ld%s", "Total mem:", mem->total_memory, " KB");
-    ret = mvwprintw(frame->win_mem, row - (row - i++), col - (col - 2)
-            , "%s\t%ld%s", "Used mem:", mem->used_memory, " KB");
-    ret = mvwprintw(frame->win_mem, row - (row - i++), col - (col - 2)
-            , "%s\t%ld%s", "Cached mem:", mem->mem_cached, " KB");
-    ret = mvwprintw(frame->win_mem, row - (row - i++), col - (col - 2)
-            , "%s\t%ld%s", "Free mem:", mem->free_memory, " KB");
-    ret = mvwprintw(frame->win_mem, row - (row - i++), col - (col - 2)
-            , "%s\t%ld%s", "Avaible mem:", mem->mem_avaible, " KB");
-    ret = mvwprintw(frame->win_mem, row - (row - i++), col - (col - 2)
-            , "%s\t%ld%s", "Swap mem:", mem->swap_total, " KB");
-    ret = mvwprintw(frame->win_mem, row - (row - i++), col - (col - 2)
-            , "%s\t%ld%s", "Swap Free:", mem->swap_free, " KB");
-    
-    if (ret < 0) {
-        error_log("return val of mvwprintw");
-        sprintf(buff, "%d", ret);
-        error_log(buff);
-    }
 }
