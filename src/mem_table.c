@@ -1,4 +1,6 @@
 #include "lametop.h"
+#include <ncurses.h>
+#include <string.h>
 
 int mem_utils(mem_stat *mem) {
     double mem_uage_perc;
@@ -17,9 +19,13 @@ int mem_utils(mem_stat *mem) {
     return COLOR_WHITE;
 }
 
-void print_mem_usage_titles()
+void print_mem_usage_titles(windows *frame, int row, int col, int i)
 {
-    
+    getmaxyx(frame->win_mem, row, col);
+    mvwprintw(frame->win_mem, row - (row - i++), col - (col - 2) , "%s", "Total mem:");
+    mvwprintw(frame->win_mem, row - (row - i++), col - (col - 2) , "%s", "Used mem:");
+    mvwprintw(frame->win_mem, row - (row - i++), col - (col - 2) , "%s", "Cached mem:");
+    mvwprintw(frame->win_mem, row - (row - i++), col - (col - 2) , "%s", "Avaible mem:");
 }
 
 void print_mem_frame(mem_stat *mem, windows *frame)
@@ -35,26 +41,19 @@ void print_mem_frame(mem_stat *mem, windows *frame)
         color = COLOR_WHITE;
     }
 
+    print_mem_usage_titles(frame, row, col, i);
     error_log("color");
     sprintf(buff, "%d", color);
     error_log(buff);
     init_pair(1, color, COLOR_BLACK);
     wattron(frame->win_mem, COLOR_PAIR(1));
-    ret = mvwprintw(frame->win_mem, row - (row - i++), col - (col - 2)
-            , "%s\t%ld%s", "Total mem:", mem->total_memory, " KB");
-    ret = mvwprintw(frame->win_mem, row - (row - i++), col - (col - 2)
-            , "%s\t%ld%s", "Used mem:", mem->used_memory, " KB");
-    ret = mvwprintw(frame->win_mem, row - (row - i++), col - (col - 2)
-            , "%s\t%ld%s", "Cached mem:", mem->mem_cached, " KB");
-    ret = mvwprintw(frame->win_mem, row - (row - i++), col - (col - 2)
-            , "%s\t%ld%s", "Free mem:", mem->free_memory, " KB");
-    ret = mvwprintw(frame->win_mem, row - (row - i++), col - (col - 2)
-            , "%s\t%ld%s", "Avaible mem:", mem->mem_avaible, " KB");
-    ret = mvwprintw(frame->win_mem, row - (row - i++), col - (col - 2)
-            , "%s\t%ld%s", "Swap mem:", mem->swap_total, " KB");
-    ret = mvwprintw(frame->win_mem, row - (row - i++), col - (col - 2)
-            , "%s\t%ld%s", "Swap Free:", mem->swap_free, " KB");
+
+    mvwprintw(frame->win_mem, row - (row - i++), col - (col - strlen("Total mem:")), "%15ld", mem->total_memory);
+    mvwprintw(frame->win_mem, row - (row - i++), col - (col - strlen("Used mem:")), "%15ld", (mem->total_memory - mem->mem_avaible));
+    mvwprintw(frame->win_mem, row - (row - i++), col - (col - strlen("Cashed mem:")), "%15ld", mem->mem_cached);
+    mvwprintw(frame->win_mem, row - (row - i++), col - (col - strlen("Avaible mem:")), "%15ld", mem->mem_avaible);
     wattroff(frame->win_mem, COLOR_PAIR(1));
+
     if (ret < 0) {
         error_log("print_mem_frame: return val of mvwprintw");
         sprintf(buff, "%d", ret);
