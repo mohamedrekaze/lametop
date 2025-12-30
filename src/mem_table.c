@@ -25,7 +25,7 @@ void print_mem_usage_titles(windows *frame, int row, int col, int i)
     mvwprintw(frame->win_mem, row - (row - i++), col - (col - 2) , "%s", "Total mem:");
     mvwprintw(frame->win_mem, row - (row - i++), col - (col - 2) , "%s", "Used mem:");
     mvwprintw(frame->win_mem, row - (row - i++), col - (col - 2) , "%s", "Cached mem:");
-    mvwprintw(frame->win_mem, row - (row - i++), col - (col - 2) , "%s", "Avaible mem:");
+    mvwprintw(frame->win_mem, row - (row - i++), col - (col - 2) , "%s", "Available mem:");
 }
 
 void print_mem_frame(mem_stat *mem, windows *frame)
